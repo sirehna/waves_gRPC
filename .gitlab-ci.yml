@@ -6,7 +6,7 @@ stages:
 lint:
    stage: lint
    script:
-     - cd Src &&
+     - cd demo_cpp_hello_world &&
        if grep --recursive --include={*.cpp,*.md,*.yml,*.cmake,*.xml,*.html,*.in,*.txt}
                --exclude-dir={Compil,CompilCMake} -P "\t" . ;
        then echo "Tabs found in the lines shown above."; false;
