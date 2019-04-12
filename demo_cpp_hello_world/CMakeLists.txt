@@ -23,13 +23,13 @@ if(GRPC_AS_SUBMODULE)
     #
     # A more robust approach to add dependency on gRPC is using
     # cmake's ExternalProject_Add (see cmake_externalproject/CMakeLists.txt).
-    
+
     # Include the gRPC's cmake build (normally grpc source code would live
     # in a git submodule called "third_party/grpc", but this example lives in
     # the same repository as gRPC sources, so we just look a few directories up)
     add_subdirectory(../../.. ${CMAKE_CURRENT_BINARY_DIR}/grpc EXCLUDE_FROM_ALL)
     message(STATUS "Using gRPC via add_subdirectory.")
-    
+
     # After using add_subdirectory, we can now use the grpc targets directly from
     # this build.
     set(_PROTOBUF_LIBPROTOBUF libprotobuf)
@@ -39,22 +39,22 @@ if(GRPC_AS_SUBMODULE)
 else()
     # This branch assumes that gRPC and all its dependencies are already installed
     # on this system, so they can be located by find_package().
-    
+
     # Find Protobuf installation
     # Looks for protobuf-config.cmake file installed by Protobuf's cmake installation.
     set(Protobuf_DEBUG ON)
     set(protobuf_MODULE_COMPATIBLE TRUE)
     # find_package(Protobuf CONFIG REQUIRED)
     message(STATUS "Using protobuf ${protobuf_VERSION}")
-    
+
     set(_PROTOBUF_LIBPROTOBUF /usr/lib/x86_64-linux-gnu/libprotobuf.a) #protobuf::libprotobuf)
     set(_PROTOBUF_PROTOC protoc ) # GJ $<TARGET_FILE:protobuf::protoc>)
-    
+
     # Find gRPC installation
     # Looks for gRPCConfig.cmake file installed by gRPC's cmake installation.
     # find_package(gRPC CONFIG REQUIRED)
     message(STATUS "Using gRPC ${gRPC_VERSION}")
-    
+
     set(_GRPC_GRPCPP_UNSECURE
         /usr/lib/x86_64-linux-gnu/libgrpc++_unsecure.a
         /usr/lib/x86_64-linux-gnu/libgrpc.a
@@ -94,7 +94,7 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
 
 # Targets greeter_[async_](client|server)
 foreach(_target
-    greeter_client greeter_server
+    greeter_sync_client greeter_sync_server
     greeter_async_client greeter_async_server)
     add_executable(${_target} "${_target}.cc"
         ${hw_proto_srcs}
