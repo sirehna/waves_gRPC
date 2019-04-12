@@ -20,5 +20,6 @@ build:
 
 test:
    stage: test
+   script:
      - cd demo_cpp_hello_world && make test && cd ..
 
