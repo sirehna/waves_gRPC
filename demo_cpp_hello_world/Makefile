@@ -77,9 +77,11 @@ run_sync_client_debug:run_sync_server
 	    -v $(shell pwd):/shared \
 	    -u $(shell id -u):$(shell id -g) \
 	    -w /shared/build_debian debian_grpc \
-	     /bin/sh -c "export GRPC_TRACE=all && export GRPC_VERBOSITY=DEBUG && ./greeter_sync_client" \
+	    /bin/sh -c "export GRPC_VERBOSITY=DEBUG && \
+	                ./greeter_sync_client \
 	    --ip `docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' grpc_sync_server` \
-	    --port 50051
+	                    --port 50051"
+	    #/bin/sh -c "export GRPC_TRACE=all && export GRPC_VERBOSITY=DEBUG && ./greeter_sync_client"
 
 stop:
 	@if docker ps | grep grpc_sync_server > /dev/null ; then echo "Stopping grpc_sync_server" && docker rm -f grpc_sync_server; fi;
@@ -141,9 +143,10 @@ run_async_client_debug:run_async_server
 			-u $(shell id -u):$(shell id -g) \
 			-w /shared/build_debian \
 			debian_grpc \
-			/bin/sh -c "export GRPC_VERBOSITY=DEBUG && ./greeter_async_client" \
+	        /bin/sh -c "export GRPC_VERBOSITY=DEBUG && \
+	                    ./greeter_async_client \
 			--ip `docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' grpc_async_server` \
-			--port 50051
-#/bin/sh -c "export GRPC_TRACE=all && export GRPC_VERBOSITY=DEBUG && ./greeter_async_client" \
+	                        --port 50053"
+	        #/bin/sh -c "export GRPC_TRACE=all && export GRPC_VERBOSITY=DEBUG && ./greeter_async_client"
 
 
