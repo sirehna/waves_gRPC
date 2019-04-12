@@ -3,7 +3,7 @@
 all: build
 
 test: stop build run_client
-	@echo "dsq"
+	@echo "Stopping network, building app, building network running server, and running client"
 
 clean: stop
 	rm -rf build_debian binMSVC
