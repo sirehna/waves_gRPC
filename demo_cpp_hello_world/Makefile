@@ -51,9 +51,6 @@ stop:
 	@if docker ps | grep grpc_client > /dev/null ; then echo "Stopping grpc_client" && docker rm -f grpc_client; fi;
 	@if docker network list | grep grpc_net > /dev/null ; then echo "Stopping grpc_net" && docker network rm grpc_net; fi;
 
-test:
-	echo "test"
-
 inspect:
 	@if docker ps | grep grpc_server > /dev/null ; then echo "Inspect grpc_server" && docker inspect grpc_server -f "{{json .NetworkSettings.Networks }}"; fi;
 
