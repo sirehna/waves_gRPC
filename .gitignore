@@ -2,4 +2,4 @@ build*
 .Rhistory
 .cproject
 .project
-
+.vscode
