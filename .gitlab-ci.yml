@@ -1,0 +1,24 @@
+stages:
+  - lint
+  - build
+  - test
+
+lint:
+   stage: lint
+   script:
+     - cd Src &&
+       if grep --recursive --include={*.cpp,*.md,*.yml,*.cmake,*.xml,*.html,*.in,*.txt}
+               --exclude-dir={Compil,CompilCMake} -P "\t" . ;
+       then echo "Tabs found in the lines shown above."; false;
+       else echo "Repo passed no-tabs check."; fi &&
+       cd ..
+
+build:
+   stage: build
+   script:
+     - cd demo_cpp_hello_world && make build && cd ..
+
+test:
+   stage: test
+     - cd demo_cpp_hello_world && make test && cd ..
+
