@@ -2,7 +2,7 @@
 
 all: build
 
-test: build run_client run_async_client stop
+test: build run_sync_client run_async_client stop
 	@echo "Building apps, building network, running servers, and running clients"
 
 clean: stop
@@ -37,27 +37,69 @@ cmake:
 network:
 	if docker network list | grep grpc_net > /dev/null ; then echo ""; else docker network create grpc_net; fi;
 
-run_server:network
-	@if docker ps | grep grpc_server > /dev/null ; then echo ""; else echo "Launching server" && docker run -d --net=grpc_net --name grpc_server -p 50051:50051 --rm -v $(shell pwd):/shared -u $(shell id -u):$(shell id -g) -w /shared/build_debian debian_grpc ./greeter_server; fi;
+run_sync_server:network
+	@if docker ps | grep grpc_sync_server > /dev/null ; \
+	    then \
+	    echo ""; \
+	    else \
+	    echo "Launching sync server" && \
+	        docker run -d \
+	        --net=grpc_net \
+	        --name grpc_sync_server \
+	        -p 50051:50051 \
+	        --rm \
+	        -v $(shell pwd):/shared \
+	        -u $(shell id -u):$(shell id -g) \
+	        -w /shared/build_debian \
+	        debian_grpc \
+	        ./greeter_sync_server; \
+	    fi;
 
-run_client:run_server
-	docker run --net=grpc_net --name grpc_client -p 50052:50052 --rm -v $(shell pwd):/shared -u $(shell id -u):$(shell id -g) -w /shared/build_debian debian_grpc ./greeter_client --ip `docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' grpc_server`  --port 50051
+run_sync_client:run_sync_server
+	docker run \
+	    --net=grpc_net \
+	    --name grpc_sync_client \
+	    -p 50052:50052 \
+	    --rm \
+	    -v $(shell pwd):/shared \
+	    -u $(shell id -u):$(shell id -g) \
+	    -w /shared/build_debian debian_grpc \
+	    ./greeter_sync_client \
+	    --ip `docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' grpc_sync_server` \
+	    --port 50051
 
-run_client_debug:run_server
-	docker run --net=grpc_net --name grpc_client -p 50052:50052 --rm -v $(shell pwd):/shared -u $(shell id -u):$(shell id -g) -w /shared/build_debian debian_grpc /bin/sh -c "export GRPC_TRACE=all && export GRPC_VERBOSITY=DEBUG && ./greeter_client --ip `docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' grpc_server`  --port 50051"
+run_sync_client_debug:run_sync_server
+	docker run \
+	    --net=grpc_net \
+	    --name grpc_sync_client \
+	    -p 50052:50052 \
+	    --rm \
+	    -v $(shell pwd):/shared \
+	    -u $(shell id -u):$(shell id -g) \
+	    -w /shared/build_debian debian_grpc \
+	     /bin/sh -c "export GRPC_TRACE=all && export GRPC_VERBOSITY=DEBUG && ./greeter_sync_client" \
+	    --ip `docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' grpc_sync_server` \
+	    --port 50051
 
 stop:
-	@if docker ps | grep grpc_server > /dev/null ; then echo "Stopping grpc_server" && docker rm -f grpc_server; fi;
-	@if docker ps | grep grpc_client > /dev/null ; then echo "Stopping grpc_client" && docker rm -f grpc_client; fi;
+	@if docker ps | grep grpc_sync_server > /dev/null ; then echo "Stopping grpc_sync_server" && docker rm -f grpc_sync_server; fi;
+	@if docker ps | grep grpc_sync_client > /dev/null ; then echo "Stopping grpc_sync_client" && docker rm -f grpc_sync_client; fi;
 	@if docker ps | grep grpc_async_client > /dev/null ; then echo "Stopping grpc_async_client" && docker rm -f grpc_async_client; fi;
 	@if docker ps | grep grpc_async_server > /dev/null ; then echo "Stopping grpc_async_server" && docker rm -f grpc_async_server; fi;
 	@if docker network list | grep grpc_net > /dev/null ; then echo "Deleting grpc_net" && docker network rm grpc_net; fi;
 
 inspect:
-	@if docker ps | grep grpc_server > /dev/null ; then echo "Inspect grpc_server" && docker inspect grpc_server -f "{{json .NetworkSettings.Networks }}"; fi;
+	@if docker ps | grep grpc_sync_server > /dev/null ; \
+	    then \
+	    echo "Inspect grpc_sync_server" && docker inspect grpc_sync_server -f "{{json .NetworkSettings.Networks }}"; \
+	    fi;
 
 get_server_ip_from_server:
-	@if docker ps | grep grpc_server > /dev/null ; then echo "Inspect grpc_server" && docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' grpc_server; fi;
+	@if docker ps | grep grpc_sync_server > /dev/null ; \
+	    then \
+	    echo "Inspect grpc_sync_server" && \
+	    docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' grpc_sync_server; \
+	    fi;
 
 run_async_server:network build
 	@if docker ps | grep grpc_async_server > /dev/null ; \
