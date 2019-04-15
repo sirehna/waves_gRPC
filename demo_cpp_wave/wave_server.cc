@@ -19,6 +19,10 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <math.h>
+
+#define PI 3.14159265
+#define G 9.81
 
 #include <grpcpp/grpcpp.h>
 
@@ -35,12 +39,26 @@ using grpc::Status;
 using wave::Point;
 using wave::Elevation;
 using wave::WaveService;
+using wave::FlatDiscreteDirectionalWaveSpectrum;
 
 // Logic and data behind the server's behavior.
 class WaveServiceImpl final : public WaveService::Service {
   Status GetElevation(ServerContext* context, const Point* request,
                   Elevation* reply) override {
-    reply->set_z(request->x() + request->y());
+
+    FlatDiscreteDirectionalWaveSpectrum* waveSpectrum;
+    waveSpectrum->set_a(2.0);
+    waveSpectrum->set_omega(2 * PI / 12);
+    waveSpectrum->set_psi(PI / 4);
+    waveSpectrum->set_k(waveSpectrum->omega() * waveSpectrum->omega() / G);
+    waveSpectrum->set_phase(0.0);
+
+    const double z = - waveSpectrum->a() * sin(
+                          waveSpectrum->k() * (request->x() * cos(waveSpectrum->psi()) + request->y() * sin(waveSpectrum->psi()))
+                          - waveSpectrum->omega() * request->t()
+                          + waveSpectrum->phase()
+                       );
+    reply->set_z(z);
     return Status::OK;
   }
 };

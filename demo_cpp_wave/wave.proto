@@ -38,3 +38,12 @@ message Point {
 message Elevation {
   double z = 1;
 }
+
+// The discrete directional wave spectrum
+message FlatDiscreteDirectionalWaveSpectrum {
+  double a = 1;       //!< Amplitude (in m)
+  double omega = 2;   //!< Angular frequencies the spectrum was discretized at (in rad/s)
+  double psi = 3;     //!< Directions between 0 & 2pi the spatial spreading was discretized at (in rad)
+  double k = 4;       //!< Discretized wave number (for each frequency) in rad/m
+  double phase = 5;   //!< Random phases, for each (direction,frequency) couple (but time invariant) in radian
+}
