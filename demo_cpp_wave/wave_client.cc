@@ -24,6 +24,8 @@
 
 #include <args.hxx>
 
+#include "NumericalErrorException.hpp"
+
 #ifdef BAZEL_BUILD
 #include "examples/protos/wave.grpc.pb.h"
 #else
@@ -67,6 +69,7 @@ class WaveServiceClient {
     } else {
       std::cout << status.error_code() << ": " << status.error_message()
                 << std::endl;
+      THROW(__PRETTY_FUNCTION__, NumericalErrorException, "Error ");
       return 0;
     }
   }
