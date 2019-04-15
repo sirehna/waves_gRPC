@@ -24,6 +24,8 @@
 #include <grpc/support/log.h>
 #include <thread>
 
+#include <args.hxx>
+
 #ifdef BAZEL_BUILD
 #include "examples/protos/helloworld.grpc.pb.h"
 #else
@@ -122,15 +124,48 @@ class GreeterClient {
     CompletionQueue cq_;
 };
 
-int main(int argc, char** argv) {
 
+int main(int argc, char const * const argv[])
+{
+    args::ArgumentParser parser("This is a test grpc client demo program.", "Enjoy.");
+    args::HelpFlag help(parser, "help", "Display this help menu", {'h', "help"});
+    args::ValueFlag<int> input_port(parser, "port", "The websocket port to use", {'p', "port"});
+    args::ValueFlag<std::string> input_ip(parser, "ip", "The websocket port to use", {"ip"});
+    try
+    {
+        parser.ParseCLI(argc, argv);
+    }
+    catch (args::Help)
+    {
+        std::cout << parser;
+        return 0;
+    }
+    catch (args::ParseError e)
+    {
+        std::cerr << e.what() << std::endl;
+        std::cerr << parser;
+        return 1;
+    }
+    catch (args::ValidationError e)
+    {
+        std::cerr << e.what() << std::endl;
+        std::cerr << parser;
+        return 1;
+    }
+    std::string port("50053");
+    std::string ip("localhost");
+    if (input_port) { std::cout << "input_port: " << args::get(input_port) << std::endl; port = std::to_string(args::get(input_port));}
+    if (input_ip) { std::cout << "input_ip: " << args::get(input_ip) << std::endl; ip = args::get(input_ip); }
 
     // Instantiate the client. It requires a channel, out of which the actual RPCs
     // are created. This channel models a connection to an endpoint (in this case,
     // localhost at port 50051). We indicate that the channel isn't authenticated
     // (use of InsecureChannelCredentials()).
+    std::cout << "Async Client 2" << std::endl;
+    // GreeterClient greeter(grpc::CreateChannel(
+    //   "localhost:50051", grpc::InsecureChannelCredentials()));
     GreeterClient greeter(grpc::CreateChannel(
-            "localhost:50051", grpc::InsecureChannelCredentials()));
+        ip + ":" + port, grpc::InsecureChannelCredentials()));
 
     // Spawn reader thread that loops indefinitely
     std::thread thread_ = std::thread(&GreeterClient::AsyncCompleteRpc, &greeter);

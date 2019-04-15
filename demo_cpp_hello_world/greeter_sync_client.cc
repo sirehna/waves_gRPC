@@ -89,7 +89,7 @@ class GreeterClient {
 //   std::string user("world");
 //   std::string reply = greeter.SayHello(user);
 //   std::cout << "Greeter received: " << reply << std::endl;
-// 
+//
 //   return 0;
 // }
 
@@ -129,7 +129,7 @@ int main(int argc, char const * const argv[])
     // are created. This channel models a connection to an endpoint (in this case,
     // localhost at port 50051). We indicate that the channel isn't authenticated
     // (use of InsecureChannelCredentials()).
-    std::cout << "Client" << std::endl;
+    std::cout << "Sync Client" << std::endl;
     // GreeterClient greeter(grpc::CreateChannel(
     //     "grpc_net:50051", grpc::InsecureChannelCredentials()));
     //GreeterClient greeter(grpc::CreateChannel(
