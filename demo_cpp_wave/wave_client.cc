@@ -33,65 +33,47 @@
 using grpc::Channel;
 using grpc::ClientContext;
 using grpc::Status;
-using wave::HelloRequest;
-using wave::HelloReply;
-using wave::Greeter;
+using wave::Point;
+using wave::Elevation;
+using wave::WaveService;
 
-class GreeterClient {
+class WaveServiceClient {
  public:
-  GreeterClient(std::shared_ptr<Channel> channel)
-      : stub_(Greeter::NewStub(channel)) {}
+  WaveServiceClient(std::shared_ptr<Channel> channel)
+      : stub_(WaveService::NewStub(channel)) {}
 
   // Assembles the client's payload, sends it and presents the response back
   // from the server.
-  std::string SayHello(const std::string& user) {
+  double ClientGetElevation(const double x, const double y, const double t) {
     // Data we are sending to the server.
-    HelloRequest request;
-    request.set_name(user);
+    Point request;
+    request.set_x(x);
+    request.set_y(y);
+    request.set_t(t);
 
     // Container for the data we expect from the server.
-    HelloReply reply;
+    Elevation reply;
 
     // Context for the client. It could be used to convey extra information to
     // the server and/or tweak certain RPC behaviors.
     ClientContext context;
 
     // The actual RPC.
-    Status status = stub_->SayHello(&context, request, &reply);
+    Status status = stub_->GetElevation(&context, request, &reply);
 
     // Act upon its status.
     if (status.ok()) {
-      return reply.message();
+      return reply.z();
     } else {
       std::cout << status.error_code() << ": " << status.error_message()
                 << std::endl;
-      return "RPC failed";
+      return 0;
     }
   }
 
  private:
-  std::unique_ptr<Greeter::Stub> stub_;
+  std::unique_ptr<WaveService::Stub> stub_;
 };
-
-// int main(int argc, char** argv)
-// {
-//   // Instantiate the client. It requires a channel, out of which the actual RPCs
-//   // are created. This channel models a connection to an endpoint (in this case,
-//   // localhost at port 50051). We indicate that the channel isn't authenticated
-//   // (use of InsecureChannelCredentials()).
-//   std::cout << "Client" << std::endl;
-//   // GreeterClient greeter(grpc::CreateChannel(
-//   //     "grpc_net:50051", grpc::InsecureChannelCredentials()));
-//   //GreeterClient greeter(grpc::CreateChannel(
-//   //    "localhost:50051", grpc::InsecureChannelCredentials()));
-//   GreeterClient greeter(grpc::CreateChannel(
-//       "172.19.0.2:50051", grpc::InsecureChannelCredentials()));
-//   std::string user("world");
-//   std::string reply = greeter.SayHello(user);
-//   std::cout << "Greeter received: " << reply << std::endl;
-//
-//   return 0;
-// }
 
 int main(int argc, char const * const argv[])
 {
@@ -120,7 +102,7 @@ int main(int argc, char const * const argv[])
         std::cerr << parser;
         return 1;
     }
-    std::string port("9002");
+    std::string port("50051");
     std::string ip("localhost");
     if (input_port) { std::cout << "input_port: " << args::get(input_port) << std::endl; port = std::to_string(args::get(input_port));}
     if (input_ip) { std::cout << "input_ip: " << args::get(input_ip) << std::endl; ip = args::get(input_ip); }
@@ -129,17 +111,15 @@ int main(int argc, char const * const argv[])
     // are created. This channel models a connection to an endpoint (in this case,
     // localhost at port 50051). We indicate that the channel isn't authenticated
     // (use of InsecureChannelCredentials()).
-    std::cout << "Sync Client" << std::endl;
-    // GreeterClient greeter(grpc::CreateChannel(
-    //     "grpc_net:50051", grpc::InsecureChannelCredentials()));
-    //GreeterClient greeter(grpc::CreateChannel(
-    //    "localhost:50051", grpc::InsecureChannelCredentials()));
-    GreeterClient greeter(grpc::CreateChannel(
+    std::cout << "Client" << std::endl;
+    WaveServiceClient waveService(grpc::CreateChannel(
         ip + ":" + port, grpc::InsecureChannelCredentials()));
       // "172.19.0.2:50051", grpc::InsecureChannelCredentials()));
-    std::string user("world");
-    std::string reply = greeter.SayHello(user);
-    std::cout << "Greeter received: " << reply << std::endl;
+    double x(1.3);
+    double y(2.7);
+    double t(0.1);
+    double reply = waveService.ClientGetElevation(x, y, t);
+    std::cout << "WaveService (x: " << x << ", y: " << y << ", t: " << t <<  ") received: " << reply << std::endl;
 
     return 0;
 }

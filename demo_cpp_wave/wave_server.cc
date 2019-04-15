@@ -32,16 +32,15 @@ using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::Status;
-using wave::HelloRequest;
-using wave::HelloReply;
-using wave::Greeter;
+using wave::Point;
+using wave::Elevation;
+using wave::WaveService;
 
 // Logic and data behind the server's behavior.
-class GreeterServiceImpl final : public Greeter::Service {
-  Status SayHello(ServerContext* context, const HelloRequest* request,
-                  HelloReply* reply) override {
-    std::string prefix("Hello ");
-    reply->set_message(prefix + request->name());
+class WaveServiceImpl final : public WaveService::Service {
+  Status GetElevation(ServerContext* context, const Point* request,
+                  Elevation* reply) override {
+    reply->set_z(request->x() + request->y());
     return Status::OK;
   }
 };
@@ -50,7 +49,7 @@ void RunServer() {
   std::string server_address("0.0.0.0:50051");
   // std::string server_address("grpc_net:50051");
   // std::string server_address("localhost:50051");
-  GreeterServiceImpl service;
+  WaveServiceImpl service;
 
   ServerBuilder builder;
   // Listen on the given address without any authentication mechanism.
