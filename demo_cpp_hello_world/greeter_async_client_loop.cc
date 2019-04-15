@@ -24,6 +24,8 @@
 #include <grpc/support/log.h>
 #include <thread>
 
+#include <args.hxx>
+
 #ifdef BAZEL_BUILD
 #include "examples/protos/helloworld.grpc.pb.h"
 #else
