@@ -51,7 +51,7 @@ class WaveServiceClient {
     // Data we are sending to the server.
     Point request;
     int max_size = std::min(x.size(), y.size());
-    for (int index = 0; index < max_size; index++) {
+    for (int index = 0; index < max_size; ++index) {
       request.add_x(x[index]);
       request.add_y(y[index]);
     }
@@ -121,14 +121,13 @@ int main(int argc, char const * const argv[])
     std::cout << "Client" << std::endl;
     WaveServiceClient waveService(grpc::CreateChannel(
         ip + ":" + port, grpc::InsecureChannelCredentials()));
-      // "172.19.0.2:50051", grpc::InsecureChannelCredentials()));
     std::vector<double> x{1.3, 2, 0};
     std::vector<double> y{2.7, 0.5, 0};
     double t(0.1);
     std::vector<double> z = waveService.ClientGetElevation(x, y, t);
 
     if (z.size() > 0){
-      for (int index = 0; index < z.size(); index++) {
+      for (int index = 0; index < z.size(); ++index) {
         std::cout << "WaveService (x: " << x[index] << ", y: " << y[index] << ", t: " << t <<  ") received: " << z[index] << std::endl;
       }
     } else {

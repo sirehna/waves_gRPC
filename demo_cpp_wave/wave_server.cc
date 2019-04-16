@@ -44,37 +44,45 @@ using wave::FlatDiscreteDirectionalWaveSpectrum;
 
 // Logic and data behind the server's behavior.
 class WaveServiceImpl final : public WaveService::Service {
-  Status GetElevation(ServerContext* context, const Point* request,
-                  Elevation* reply) override {
-    FlatDiscreteDirectionalWaveSpectrum waveSpectrum;
-    waveSpectrum.set_a(2.0);
-    waveSpectrum.set_omega(2 * PI / 12);
-    waveSpectrum.set_psi(PI / 4);
-    waveSpectrum.set_k(waveSpectrum.omega() * waveSpectrum.omega() / G);
-    waveSpectrum.set_phase(0.0);
-
-    reply->clear_z();
-
-    int max_size = std::min(request->x_size(), request->y_size());
-    for (int index = 0; index < max_size; index++) {
-      reply->add_z(- waveSpectrum.a() * sin(
-                        waveSpectrum.k() * (request->x(index) * cos(waveSpectrum.psi()) + request->y(index) * sin(waveSpectrum.psi()))
-                        - waveSpectrum.omega() * request->t()
-                        + waveSpectrum.phase()
-                    )
-                  );
+  public:
+    explicit WaveServiceImpl(const FlatDiscreteDirectionalWaveSpectrum& wave_spectrum):
+      wave_spectrum_(wave_spectrum)
+    {
     }
 
-    return Status::OK;
-  }
+    Status GetElevation(ServerContext* context, const Point* request,
+                    Elevation* reply) override {
+      reply->clear_z();
+
+      int max_size = std::min(request->x_size(), request->y_size());
+      for (int index = 0; index < max_size; ++index) {
+        reply->add_z(- wave_spectrum_.a() * sin(
+                          wave_spectrum_.k() * (request->x(index) * cos(wave_spectrum_.psi()) + request->y(index) * sin(wave_spectrum_.psi()))
+                          - wave_spectrum_.omega() * request->t()
+                          + wave_spectrum_.phase()
+                      )
+                    );
+      }
+
+      return Status::OK;
+    }
+
+    private:
+        FlatDiscreteDirectionalWaveSpectrum wave_spectrum_;
 };
 
+void ComputeWaveSpectrum(FlatDiscreteDirectionalWaveSpectrum& wave_spectrum);
+void ComputeWaveSpectrum(FlatDiscreteDirectionalWaveSpectrum& wave_spectrum) {
+  wave_spectrum.set_a(2.0);
+  wave_spectrum.set_omega(2 * PI / 12);
+  wave_spectrum.set_psi(PI / 4);
+  wave_spectrum.set_k(wave_spectrum.omega() * wave_spectrum.omega() / G);
+  wave_spectrum.set_phase(0.0);
+}
 
-void RunServer() {
+void RunServer(const FlatDiscreteDirectionalWaveSpectrum& wave_spectrum) {
   std::string server_address("0.0.0.0:50051");
-  // std::string server_address("grpc_net:50051");
-  // std::string server_address("localhost:50051");
-  WaveServiceImpl service;
+  WaveServiceImpl service(wave_spectrum);
 
   ServerBuilder builder;
   // Listen on the given address without any authentication mechanism.
@@ -92,7 +100,10 @@ void RunServer() {
 }
 
 int main(int argc, char** argv) {
-  RunServer();
+  FlatDiscreteDirectionalWaveSpectrum wave_spectrum;
+  ComputeWaveSpectrum(wave_spectrum);
+
+  RunServer(wave_spectrum);
 
   return 0;
 }
