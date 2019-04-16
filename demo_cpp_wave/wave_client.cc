@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include <memory>
+#include <vector>
 #include <string>
 
 #include <grpcpp/grpcpp.h>
@@ -46,12 +47,16 @@ class WaveServiceClient {
 
   // Assembles the client's payload, sends it and presents the response back
   // from the server.
-  double ClientGetElevation(const double x, const double y, const double t) {
+  std::vector<double> ClientGetElevation(const std::vector<double> x, const std::vector<double> y, const double t) {
     // Data we are sending to the server.
     Point request;
-    request.set_x(x);
-    request.set_y(y);
-    request.set_t(t);
+    if (x.size() > 0) {
+      for (int index = 0; index < x.size(); index++) {
+        request.add_x(x[index]);
+        request.add_y(y[index]);
+      }
+      request.set_t(t);
+    }
 
     // Container for the data we expect from the server.
     Elevation reply;
@@ -65,12 +70,12 @@ class WaveServiceClient {
 
     // Act upon its status.
     if (status.ok()) {
-      return reply.z();
+      std::vector<double> z(reply.z().begin(), reply.z().end());
+      return z;
     } else {
       std::cout << status.error_code() << ": " << status.error_message()
                 << std::endl;
-      THROW(__PRETTY_FUNCTION__, NumericalErrorException, "Error ");
-      return 0;
+      THROW(__PRETTY_FUNCTION__, NumericalErrorException, "Error: " + status.error_message());
     }
   }
 
@@ -118,11 +123,16 @@ int main(int argc, char const * const argv[])
     WaveServiceClient waveService(grpc::CreateChannel(
         ip + ":" + port, grpc::InsecureChannelCredentials()));
       // "172.19.0.2:50051", grpc::InsecureChannelCredentials()));
-    double x(1.3);
-    double y(2.7);
+    std::vector<double> x{1.3};
+    std::vector<double> y{2.7};
     double t(0.1);
-    double reply = waveService.ClientGetElevation(x, y, t);
-    std::cout << "WaveService (x: " << x << ", y: " << y << ", t: " << t <<  ") received: " << reply << std::endl;
+    std::vector<double> z = waveService.ClientGetElevation(x, y, t);
+
+    if (z.size() > 0 && z.size() == x.size()) {
+      for (int index = 0; index < z.size(); index++) {
+        std::cout << "WaveService (x: " << x[index] << ", y: " << y[index] << ", t: " << t <<  ") received: " << z[index] << std::endl;
+      }
+    }
 
     return 0;
 }

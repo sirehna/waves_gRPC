@@ -18,10 +18,11 @@
 
 #include <iostream>
 #include <memory>
+#include <vector>
 #include <string>
-#include <math.h>
+#include <cmath>
 
-#define PI 3.14159265
+#define PI (4.0 * std::atan(1.0))
 #define G 9.81
 
 #include <grpcpp/grpcpp.h>
@@ -45,23 +46,28 @@ using wave::FlatDiscreteDirectionalWaveSpectrum;
 class WaveServiceImpl final : public WaveService::Service {
   Status GetElevation(ServerContext* context, const Point* request,
                   Elevation* reply) override {
+    FlatDiscreteDirectionalWaveSpectrum waveSpectrum;
+    waveSpectrum.set_a(2.0);
+    waveSpectrum.set_omega(2 * PI / 12);
+    waveSpectrum.set_psi(PI / 4);
+    waveSpectrum.set_k(waveSpectrum.omega() * waveSpectrum.omega() / G);
+    waveSpectrum.set_phase(0.0);
 
-    FlatDiscreteDirectionalWaveSpectrum* waveSpectrum;
-    waveSpectrum->set_a(2.0);
-    waveSpectrum->set_omega(2 * PI / 12);
-    waveSpectrum->set_psi(PI / 4);
-    waveSpectrum->set_k(waveSpectrum->omega() * waveSpectrum->omega() / G);
-    waveSpectrum->set_phase(0.0);
+    // reply->clear_z();
+    for (int index = 0; index < request->x_size(); index++) {
+    //reply->add_z(index);
+     reply->add_z(- waveSpectrum.a() * sin(
+                       waveSpectrum.k() * (request->x(index) * cos(waveSpectrum.psi()) + request->y(index) * sin(waveSpectrum.psi()))
+                       - waveSpectrum.omega() * request->t()
+                       + waveSpectrum.phase()
+                   )
+                 );
+    }
 
-    const double z = - waveSpectrum->a() * sin(
-                          waveSpectrum->k() * (request->x() * cos(waveSpectrum->psi()) + request->y() * sin(waveSpectrum->psi()))
-                          - waveSpectrum->omega() * request->t()
-                          + waveSpectrum->phase()
-                       );
-    reply->set_z(z);
     return Status::OK;
   }
 };
+
 
 void RunServer() {
   std::string server_address("0.0.0.0:50051");

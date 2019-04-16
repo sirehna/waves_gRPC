@@ -29,14 +29,14 @@ service WaveService {
 
 // The request message containing the point coordinates.
 message Point {
-  double x = 1;
-  double y = 2;
+  repeated double x = 1;
+  repeated double y = 2;
   double t = 3;
 }
 
 // The response message containing the elevation
 message Elevation {
-  double z = 1;
+  repeated double z = 1;
 }
 
 // The discrete directional wave spectrum
