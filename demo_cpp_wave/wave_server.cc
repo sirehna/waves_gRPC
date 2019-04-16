@@ -53,15 +53,16 @@ class WaveServiceImpl final : public WaveService::Service {
     waveSpectrum.set_k(waveSpectrum.omega() * waveSpectrum.omega() / G);
     waveSpectrum.set_phase(0.0);
 
-    // reply->clear_z();
-    for (int index = 0; index < request->x_size(); index++) {
-    //reply->add_z(index);
-     reply->add_z(- waveSpectrum.a() * sin(
-                       waveSpectrum.k() * (request->x(index) * cos(waveSpectrum.psi()) + request->y(index) * sin(waveSpectrum.psi()))
-                       - waveSpectrum.omega() * request->t()
-                       + waveSpectrum.phase()
-                   )
-                 );
+    reply->clear_z();
+
+    int max_size = std::min(request->x_size(), request->y_size());
+    for (int index = 0; index < max_size; index++) {
+      reply->add_z(- waveSpectrum.a() * sin(
+                        waveSpectrum.k() * (request->x(index) * cos(waveSpectrum.psi()) + request->y(index) * sin(waveSpectrum.psi()))
+                        - waveSpectrum.omega() * request->t()
+                        + waveSpectrum.phase()
+                    )
+                  );
     }
 
     return Status::OK;
