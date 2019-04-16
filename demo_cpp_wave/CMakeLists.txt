@@ -8,6 +8,9 @@ else()
     add_definitions(-D_WIN32_WINNT=0x600)
 endif()
 
+# SET(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+# INCLUDE(CMakeCompilationOptions)
+
 if(GRPC_AS_SUBMODULE)
     # One way to build a projects that uses gRPC is to just include the
     # entire gRPC project tree via "add_subdirectory".
