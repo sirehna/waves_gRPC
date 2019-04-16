@@ -36,6 +36,7 @@
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
+using grpc::ServerWriter;
 using grpc::Status;
 using wave::Point;
 using wave::Elevation;
@@ -64,6 +65,26 @@ class WaveServiceImpl final : public WaveService::Service {
                     );
       }
 
+      return Status::OK;
+    }
+
+    Status GetElevations(ServerContext* context, const Point* request,
+                        ServerWriter<Elevation>* writer) override {
+      Elevation elevation;
+      int max_size = std::min(request->x_size(), request->y_size());
+      for (double t = request->t_start(); t < request->t_end(); t = t + request->dt()) {
+        elevation.clear_z();
+        elevation.set_t(t);
+        for (int index = 0; index < max_size; ++index) {
+          elevation.add_z(- wave_spectrum_.a() * sin(
+                                wave_spectrum_.k() * (request->x(index) * cos(wave_spectrum_.psi()) + request->y(index) * sin(wave_spectrum_.psi()))
+                                - wave_spectrum_.omega() * t
+                                + wave_spectrum_.phase()
+                            )
+                          );
+        }
+        writer->Write(elevation);
+      }
       return Status::OK;
     }
 

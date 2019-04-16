@@ -25,6 +25,7 @@ package wave;
 service WaveService {
   // Request wave elevation
   rpc GetElevation (Point) returns (Elevation) {}
+  rpc GetElevations (Point) returns (stream Elevation) {}
 }
 
 // The request message containing the point coordinates.
@@ -32,12 +33,17 @@ message Point {
   repeated double x = 1;
   repeated double y = 2;
   double t = 3;
+  double dt = 4;
+  double t_start = 5;
+  double t_end = 6;
 }
 
 // The response message containing the elevation
 message Elevation {
   repeated double z = 1;
+  double t = 2;
 }
+
 
 // The discrete directional wave spectrum
 message FlatDiscreteDirectionalWaveSpectrum {
