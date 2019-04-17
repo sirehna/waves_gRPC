@@ -96,8 +96,9 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
 
 # Targets greeter_[async_](client|server)
 foreach(_target
-    greeter_sync_client greeter_sync_server
-    greeter_async_client greeter_async_server)
+    greeter_sync_client
+    greeter_async_client
+    greeter_async_server)
     add_executable(${_target} "${_target}.cc"
         ${hw_proto_srcs}
         ${hw_grpc_srcs})
@@ -106,6 +107,18 @@ foreach(_target
         ${_PROTOBUF_LIBPROTOBUF}
         pthread)
 endforeach()
+
+
+add_executable(greeter_sync_server
+    greeter_sync_server.cc
+    greeter_sync_server_main.cc
+    ${hw_proto_srcs}
+    ${hw_grpc_srcs})
+target_link_libraries(greeter_sync_server
+    ${_GRPC_GRPCPP_UNSECURE}
+    ${_PROTOBUF_LIBPROTOBUF}
+    pthread)
+
 
 MESSAGE(STATUS "CMAKE_CURRENT_SOURCE_DIR = ${CMAKE_CURRENT_SOURCE_DIR}")
 # add_executable(my_test
@@ -123,3 +136,19 @@ target_include_directories(my_test SYSTEM PRIVATE
     ${THIRDPARTY_PREFIX}/third_party/google_test/googletest
     ${THIRDPARTY_PREFIX}/third_party/google_test/googletest/include)
 target_link_libraries(my_test pthread)
+
+
+add_executable(test_server
+    greeter_sync_server.cc
+    ${hw_proto_srcs}
+    ${hw_grpc_srcs}
+    ${THIRDPARTY_PREFIX}/third_party/google_test/googletest/src/gtest-all.cc
+    ${THIRDPARTY_PREFIX}/third_party/google_test/googletest/src/gtest_main.cc
+)
+target_include_directories(test_server SYSTEM PRIVATE
+    ${THIRDPARTY_PREFIX}/third_party/google_test/googletest
+    ${THIRDPARTY_PREFIX}/third_party/google_test/googletest/include)
+target_link_libraries(test_server
+    ${_GRPC_GRPCPP_UNSECURE}
+    ${_PROTOBUF_LIBPROTOBUF}
+    pthread)
