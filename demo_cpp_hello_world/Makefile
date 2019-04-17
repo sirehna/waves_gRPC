@@ -21,7 +21,11 @@ all_stop: stop dc_stop
 cmake:
 	docker build -t debian_grpc .
 	mkdir -p build_debian
-	docker run --rm -v $(shell pwd):/shared -v $(shell pwd)/../third_party:/third_party -u $(shell id -u):$(shell id -g) -w /shared/build_debian debian_grpc \
+	docker run --rm \
+	    -v $(shell pwd):/shared -v $(shell pwd)/../third_party:/third_party \
+	    -u $(shell id -u):$(shell id -g) \
+	    -w /shared/build_debian \
+	    debian_grpc \
 	    cmake -Wno-dev \
 	          -G Ninja \
 	          -DCMAKE_BUILD_TYPE=Relase \
@@ -29,7 +33,10 @@ cmake:
 	          /shared
 
 build: cmake
-	docker run --rm -v $(shell pwd):/shared -v $(shell pwd)/../third_party:/third_party -u $(shell id -u):$(shell id -g) -w /shared/build_debian debian_grpc ninja
+	docker run --rm \
+	    -v $(shell pwd):/shared -v $(shell pwd)/../third_party:/third_party \
+	    -u $(shell id -u):$(shell id -g) \
+	    -w /shared/build_debian debian_grpc ninja
 
 docker_server:build
 	cp build_debian/greeter_sync_server docker_sync_server/.
