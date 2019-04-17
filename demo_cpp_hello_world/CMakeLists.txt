@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.8)
 
 project(HelloWorld C CXX)
 
+SET(THIRDPARTY_PREFIX "" CACHE STRING "String prefix to indicate third_party location. Use .. whith local compilation")
+
 if(NOT MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 else()
@@ -104,3 +106,20 @@ foreach(_target
         ${_PROTOBUF_LIBPROTOBUF}
         pthread)
 endforeach()
+
+MESSAGE(STATUS "CMAKE_CURRENT_SOURCE_DIR = ${CMAKE_CURRENT_SOURCE_DIR}")
+# add_executable(my_test
+#     ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/google_test/googletest/src/gtest-all.cc
+#     ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/google_test/googletest/src/gtest_main.cc
+#     )
+# target_include_directories(my_test SYSTEM PRIVATE
+#     ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/google_test/googletest/include)
+add_executable(my_test
+    tests.cpp
+    ${THIRDPARTY_PREFIX}/third_party/google_test/googletest/src/gtest-all.cc
+    ${THIRDPARTY_PREFIX}/third_party/google_test/googletest/src/gtest_main.cc
+)
+target_include_directories(my_test SYSTEM PRIVATE
+    ${THIRDPARTY_PREFIX}/third_party/google_test/googletest
+    ${THIRDPARTY_PREFIX}/third_party/google_test/googletest/include)
+target_link_libraries(my_test pthread)
