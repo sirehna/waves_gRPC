@@ -21,7 +21,7 @@ all_stop: stop dc_stop
 cmake:
 	docker build -t debian_grpc .
 	mkdir -p build_debian
-	docker run --rm -v $(shell pwd):/shared -u $(shell id -u):$(shell id -g) -w /shared/build_debian debian_grpc \
+	docker run --rm -v $(shell pwd):/shared -v $(shell pwd)/../third_party:/third_party -u $(shell id -u):$(shell id -g) -w /shared/build_debian debian_grpc \
 	    cmake -Wno-dev \
 	          -G Ninja \
 	          -DCMAKE_BUILD_TYPE=Relase \
@@ -29,7 +29,7 @@ cmake:
 	          /shared
 
 build: cmake
-	docker run --rm -v $(shell pwd):/shared -u $(shell id -u):$(shell id -g) -w /shared/build_debian debian_grpc ninja
+	docker run --rm -v $(shell pwd):/shared -v $(shell pwd)/../third_party:/third_party -u $(shell id -u):$(shell id -g) -w /shared/build_debian debian_grpc ninja
 
 docker_server:build
 	cp build_debian/greeter_sync_server docker_sync_server/.
@@ -204,3 +204,12 @@ run_async_client_debug:run_async_server
 	        #/bin/sh -c "export GRPC_TRACE=all && export GRPC_VERBOSITY=DEBUG && ./greeter_async_client"
 
 
+gtest:build
+	docker run \
+	        --rm \
+	        -v $(shell pwd):/shared \
+	        -u $(shell id -u):$(shell id -g) \
+	        -w /shared/build_debian \
+	        debian_grpc \
+	        ./my_test --gtest_color=yes
+# --gtest_list_tests
