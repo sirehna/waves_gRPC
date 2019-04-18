@@ -1,7 +1,4 @@
 /*
- *
- * Copyright 2015 gRPC authors.
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,16 +19,12 @@
 #include <string>
 #include <cmath>
 
-#define PI (4.0 * std::atan(1.0))
-#define G 9.81
-
 #include <grpcpp/grpcpp.h>
 
-#ifdef BAZEL_BUILD
-#include "examples/protos/wave.grpc.pb.h"
-#else
 #include "wave.grpc.pb.h"
-#endif
+
+#define PI (4.0 * std::atan(1.0))
+#define G 9.81
 
 using grpc::Server;
 using grpc::ServerBuilder;
