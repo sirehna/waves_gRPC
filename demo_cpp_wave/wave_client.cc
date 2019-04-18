@@ -14,8 +14,9 @@ using grpc::ClientContext;
 using grpc::ClientReader;
 using grpc::Status;
 using wave::Point;
-using wave::Elevation;
-using wave::WaveService;
+using wave::ElevationRequest;
+using wave::ElevationResponse;
+using wave::ElevationService;
 
 void display_elevations(const std::vector<double>& z, const std::vector<double>& x, const std::vector<double>& y, const double t);
 void display_elevations(const std::vector<double>& z, const std::vector<double>& x, const std::vector<double>& y, const double t)
@@ -24,82 +25,84 @@ void display_elevations(const std::vector<double>& z, const std::vector<double>&
     {
         for (size_t index = 0; index < z.size(); ++index)
         {
-            std::cout << "WaveService (x: " << x[index] << ", y: " << y[index] << ", t: " << t <<  ") received: " << z[index] << std::endl;
+            std::cout << "ElevationService (x: " << x[index] << ", y: " << y[index] << ", t: " << t <<  ") received: " << z[index] << std::endl;
         }
     }
     else
     {
-        std::cout << "WaveService received no data." << std::endl;
+        std::cout << "ElevationService received no data." << std::endl;
     }
 }
 
-class WaveServiceClient
+class ElevationServiceClient
 {
     public:
-    WaveServiceClient(std::shared_ptr<Channel> channel)
-        : stub_(WaveService::NewStub(channel)) {}
+        ElevationServiceClient(std::shared_ptr<Channel> channel)
+            : stub_(ElevationService::NewStub(channel)) {}
 
-    void get_elevation(const std::vector<double>& x, const std::vector<double>& y, const double t)
-    {
-        Point request;
-        const size_t max_size = std::min(x.size(), y.size());
-        for (size_t index = 0; index < max_size; ++index)
+        void get_elevation(const std::vector<double>& x, const std::vector<double>& y, const double t)
         {
-            request.add_x(x[index]);
-            request.add_y(y[index]);
+            ElevationRequest request;
+            const size_t max_size = std::min(x.size(), y.size());
+            for (size_t index = 0; index < max_size; ++index)
+            {
+                Point* added_point = request.add_points();
+                added_point->set_x(x[index]);
+                added_point->set_y(y[index]);
+            }
+            request.set_t(t);
+
+            ElevationResponse reply;
+            ClientContext context;
+
+            Status status = stub_->GetElevation(&context, request, &reply);
+            if (status.ok())
+            {
+                std::vector<double> z(reply.z().begin(), reply.z().end());
+                display_elevations(z, x, y, t);
+            }
+            else
+            {
+                std::cout << status.error_code() << ": " << status.error_message() << std::endl;
+                std::cout << "ElevationService failed." << std::endl;
+            }
         }
-        request.set_t(t);
 
-        Elevation reply;
-        ClientContext context;
-
-        Status status = stub_->GetElevation(&context, request, &reply);
-        if (status.ok())
+        void get_elevations(const std::vector<double>& x, const std::vector<double>& y,
+                            const double dt, const double t_start, const double t_end)
         {
-            std::vector<double> z(reply.z().begin(), reply.z().end());
-            display_elevations(z, x, y, t);
-        }
-        else
-        {
-            std::cout << status.error_code() << ": " << status.error_message() << std::endl;
-            std::cout << "WaveService failed." << std::endl;
-        }
-    }
+            ElevationRequest request;
+            const size_t max_size = std::min(x.size(), y.size());
+            for (size_t index = 0; index < max_size; ++index)
+            {
+                Point* added_point = request.add_points();
+                added_point->set_x(x[index]);
+                added_point->set_y(y[index]);
+            }
+            request.set_t_start(t_start);
+            request.set_t_end(t_end);
+            request.set_dt(dt);
 
-    void get_elevations(const std::vector<double>& x, const std::vector<double>& y,
-                        const double dt, const double t_start, const double t_end)
-    {
-        Point request;
-        const size_t max_size = std::min(x.size(), y.size());
-        for (size_t index = 0; index < max_size; ++index)
-        {
-            request.add_x(x[index]);
-            request.add_y(y[index]);
-        }
-        request.set_dt(dt);
-        request.set_t_start(t_start);
-        request.set_t_end(t_end);
+            ElevationResponse elevation;
+            ClientContext context;
 
-        Elevation elevation;
-        ClientContext context;
+            std::unique_ptr<ClientReader<ElevationResponse> > reader(stub_->GetElevations(&context, request));
+            while (reader->Read(&elevation))
+            {
+                std::vector<double> z(elevation.z().begin(), elevation.z().end());
+                display_elevations(z, x, y, elevation.t());
+            }
+            Status status = reader->Finish();
 
-        std::unique_ptr<ClientReader<Elevation> > reader(stub_->GetElevations(&context, request));
-        while (reader->Read(&elevation))
-        {
-            std::vector<double> z(elevation.z().begin(), elevation.z().end());
-            display_elevations(z, x, y, elevation.t());
+            if (not(status.ok()))
+            {
+                std::cout << status.error_code() << ": " << status.error_message() << std::endl;
+                std::cout << "ElevationService failed." << std::endl;
+            }
         }
-        Status status = reader->Finish();
-
-        if (not(status.ok()))
-        {
-            std::cout << status.error_code() << ": " << status.error_message() << std::endl;
-            std::cout << "WaveService failed." << std::endl;
-        }
-    }
 
     private:
-        std::unique_ptr<WaveService::Stub> stub_;
+        std::unique_ptr<ElevationService::Stub> stub_;
 };
 
 
@@ -141,7 +144,7 @@ int main(int argc, char const * const argv[])
     }
 
     std::cout << "Client" << std::endl;
-    WaveServiceClient wave_service(grpc::CreateChannel(
+    ElevationServiceClient elevation_service(grpc::CreateChannel(
         ip + ":" + port, grpc::InsecureChannelCredentials()));
     std::cout << std::endl;
 
@@ -149,14 +152,14 @@ int main(int argc, char const * const argv[])
     const std::vector<double> x{1.3, 2, 0};
     const std::vector<double> y{2.7, 0.5, 0};
     const double t(0.1);
-    wave_service.get_elevation(x, y, t);
+    elevation_service.get_elevation(x, y, t);
     std::cout << std::endl;
 
     std::cout << "Server Streaming Elevation" << std::endl << std::endl;
     const double dt(0.1);
     const double t_start(0.0);
     const double t_end(0.25);
-    wave_service.get_elevations(x, y, dt, t_start, t_end);
+    elevation_service.get_elevations(x, y, dt, t_start, t_end);
     std::cout << std::endl;
 
     return 0;

@@ -7,32 +7,36 @@ option objc_class_prefix = "HLW";
 
 package wave;
 
-// The wave service definition.
-service WaveService
+// The elevation service definition.
+service ElevationService
 {
-    // Request wave elevation
-    rpc GetElevation (Point) returns (Elevation) {}
-    rpc GetElevations (Point) returns (stream Elevation) {}
+    rpc GetElevation (ElevationRequest) returns (ElevationResponse) {}
+    rpc GetElevations (ElevationRequest) returns (stream ElevationResponse) {}
 }
 
-// The request message containing the point coordinates.
+// The point coordinates
 message Point
 {
-    repeated double x = 1;
-    repeated double y = 2;
-    double t = 3;
-    double dt = 4;
-    double t_start = 5;
-    double t_end = 6;
+    double x = 1;
+    double y = 2;
+}
+
+// The request message containing the point coordinates and the time.
+message ElevationRequest
+{
+    repeated Point points = 1;
+    double t = 2;
+    double t_start = 3;
+    double t_end = 4;
+    double dt = 5;
 }
 
 // The response message containing the elevation
-message Elevation
+message ElevationResponse
 {
     repeated double z = 1;
     double t = 2;
 }
-
 
 // The discrete directional wave spectrum
 message FlatDiscreteDirectionalWaveSpectrum
