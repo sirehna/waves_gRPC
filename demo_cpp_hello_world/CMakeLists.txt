@@ -139,6 +139,7 @@ target_link_libraries(my_test pthread)
 
 
 add_executable(test_server
+    test_server.cpp
     greeter_sync_server.cc
     ${hw_proto_srcs}
     ${hw_grpc_srcs}
