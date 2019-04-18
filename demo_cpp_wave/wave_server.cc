@@ -70,8 +70,8 @@ class WaveServiceImpl final : public WaveService::Service {
         FlatDiscreteDirectionalWaveSpectrum wave_spectrum_;
 };
 
-void ComputeWaveSpectrum(FlatDiscreteDirectionalWaveSpectrum& wave_spectrum);
-void ComputeWaveSpectrum(FlatDiscreteDirectionalWaveSpectrum& wave_spectrum) {
+void compute_wave_sectrum(FlatDiscreteDirectionalWaveSpectrum& wave_spectrum);
+void compute_wave_sectrum(FlatDiscreteDirectionalWaveSpectrum& wave_spectrum) {
   wave_spectrum.set_a(2.0);
   wave_spectrum.set_omega(2 * PI / 12);
   wave_spectrum.set_psi(PI / 4);
@@ -79,7 +79,8 @@ void ComputeWaveSpectrum(FlatDiscreteDirectionalWaveSpectrum& wave_spectrum) {
   wave_spectrum.set_phase(0.0);
 }
 
-void RunServer(const FlatDiscreteDirectionalWaveSpectrum& wave_spectrum) {
+void run_server(const FlatDiscreteDirectionalWaveSpectrum& wave_spectrum);
+void run_server(const FlatDiscreteDirectionalWaveSpectrum& wave_spectrum) {
   std::string server_address("0.0.0.0:50051");
   WaveServiceImpl service(wave_spectrum);
 
@@ -93,9 +94,9 @@ void RunServer(const FlatDiscreteDirectionalWaveSpectrum& wave_spectrum) {
 
 int main(int argc, char** argv) {
   FlatDiscreteDirectionalWaveSpectrum wave_spectrum;
-  ComputeWaveSpectrum(wave_spectrum);
+  compute_wave_sectrum(wave_spectrum);
 
-  RunServer(wave_spectrum);
+  run_server(wave_spectrum);
 
   return 0;
 }
