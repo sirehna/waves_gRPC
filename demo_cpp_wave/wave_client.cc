@@ -1,18 +1,3 @@
-/*
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
-
 #include <iostream>
 #include <memory>
 #include <vector>
@@ -48,10 +33,7 @@ class WaveServiceClient {
   WaveServiceClient(std::shared_ptr<Channel> channel)
       : stub_(WaveService::NewStub(channel)) {}
 
-  // Assembles the client's payload, sends it and presents the response back
-  // from the server.
   void ClientGetElevation(const std::vector<double>& x, const std::vector<double>& y, const double t) {
-    // Data we are sending to the server.
     Point request;
     const size_t max_size = std::min(x.size(), y.size());
     for (size_t index = 0; index < max_size; ++index) {
@@ -60,17 +42,12 @@ class WaveServiceClient {
     }
     request.set_t(t);
 
-    // Container for the data we expect from the server.
     Elevation reply;
 
-    // Context for the client. It could be used to convey extra information to
-    // the server and/or tweak certain RPC behaviors.
     ClientContext context;
 
-    // The actual RPC.
     Status status = stub_->GetElevation(&context, request, &reply);
 
-    // Act upon its status.
     if (status.ok()) {
       std::vector<double> z(reply.z().begin(), reply.z().end());
       displayElevations(z, x, y, t);
@@ -81,11 +58,8 @@ class WaveServiceClient {
     }
   }
 
-  // Assembles the client's payload, sends it and presents the response back
-  // from the server.
   void ClientGetElevations(const std::vector<double>& x, const std::vector<double>& y,
                            const double dt, const double t_start, const double t_end) {
-    // Data we are sending to the server.
     Point request;
     const size_t max_size = std::min(x.size(), y.size());
     for (size_t index = 0; index < max_size; ++index) {
@@ -96,11 +70,8 @@ class WaveServiceClient {
     request.set_t_start(t_start);
     request.set_t_end(t_end);
 
-    // Container for the data we expect from the server.
     Elevation elevation;
 
-    // Context for the client. It could be used to convey extra information to
-    // the server and/or tweak certain RPC behaviors.
     ClientContext context;
 
     std::unique_ptr<ClientReader<Elevation> > reader(stub_->GetElevations(&context, request));
@@ -154,10 +125,6 @@ int main(int argc, char const * const argv[])
     if (input_port) { std::cout << "input_port: " << args::get(input_port) << std::endl; port = std::to_string(args::get(input_port));}
     if (input_ip) { std::cout << "input_ip: " << args::get(input_ip) << std::endl; ip = args::get(input_ip); }
 
-    // Instantiate the client. It requires a channel, out of which the actual RPCs
-    // are created. This channel models a connection to an endpoint (in this case,
-    // localhost at port 50051). We indicate that the channel isn't authenticated
-    // (use of InsecureChannelCredentials()).
     std::cout << "Client" << std::endl;
     WaveServiceClient waveService(grpc::CreateChannel(
         ip + ":" + port, grpc::InsecureChannelCredentials()));
