@@ -48,8 +48,8 @@ class WaveServiceImpl final : public WaveService::Service {
                     Elevation* reply) override {
       reply->clear_z();
 
-      int max_size = std::min(request->x_size(), request->y_size());
-      for (int index = 0; index < max_size; ++index) {
+      size_t max_size = std::min(request->x_size(), request->y_size());
+      for (size_t index = 0; index < max_size; ++index) {
         reply->add_z(- wave_spectrum_.a() * sin(
                           wave_spectrum_.k() * (request->x(index) * cos(wave_spectrum_.psi()) + request->y(index) * sin(wave_spectrum_.psi()))
                           - wave_spectrum_.omega() * request->t()
@@ -64,11 +64,11 @@ class WaveServiceImpl final : public WaveService::Service {
     Status GetElevations(ServerContext* context, const Point* request,
                         ServerWriter<Elevation>* writer) override {
       Elevation elevation;
-      int max_size = std::min(request->x_size(), request->y_size());
+      size_t max_size = std::min(request->x_size(), request->y_size());
       for (double t = request->t_start(); t < request->t_end(); t = t + request->dt()) {
         elevation.clear_z();
         elevation.set_t(t);
-        for (int index = 0; index < max_size; ++index) {
+        for (size_t index = 0; index < max_size; ++index) {
           elevation.add_z(- wave_spectrum_.a() * sin(
                                 wave_spectrum_.k() * (request->x(index) * cos(wave_spectrum_.psi()) + request->y(index) * sin(wave_spectrum_.psi()))
                                 - wave_spectrum_.omega() * t

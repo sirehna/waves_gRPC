@@ -37,7 +37,7 @@ using wave::WaveService;
 void displayElevations(const std::vector<double> z, const std::vector<double> x, const std::vector<double> y, const double t);
 void displayElevations(const std::vector<double> z, const std::vector<double> x, const std::vector<double> y, const double t) {
   if (z.size() > 0){
-    for (int index = 0; index < z.size(); ++index) {
+    for (size_t index = 0; index < z.size(); ++index) {
       std::cout << "WaveService (x: " << x[index] << ", y: " << y[index] << ", t: " << t <<  ") received: " << z[index] << std::endl;
     }
   } else {
@@ -55,8 +55,8 @@ class WaveServiceClient {
   void ClientGetElevation(const std::vector<double> x, const std::vector<double> y, const double t) {
     // Data we are sending to the server.
     Point request;
-    int max_size = std::min(x.size(), y.size());
-    for (int index = 0; index < max_size; ++index) {
+    size_t max_size = std::min(x.size(), y.size());
+    for (size_t index = 0; index < max_size; ++index) {
       request.add_x(x[index]);
       request.add_y(y[index]);
     }
@@ -89,8 +89,8 @@ class WaveServiceClient {
                            const double dt, const double t_start, const double t_end) {
     // Data we are sending to the server.
     Point request;
-    int max_size = std::min(x.size(), y.size());
-    for (int index = 0; index < max_size; ++index) {
+    size_t max_size = std::min(x.size(), y.size());
+    for (size_t index = 0; index < max_size; ++index) {
       request.add_x(x[index]);
       request.add_y(y[index]);
     }
