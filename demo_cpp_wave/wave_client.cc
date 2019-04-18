@@ -128,8 +128,8 @@ int main(int argc, char const * const argv[])
 {
     args::ArgumentParser parser("This is a test grpc client demo program.", "Enjoy.");
     args::HelpFlag help(parser, "help", "Display this help menu", {'h', "help"});
-    args::ValueFlag<int> input_port(parser, "port", "The websocket port to use", {'p', "port"});
-    args::ValueFlag<std::string> input_ip(parser, "ip", "The websocket port to use", {"ip"});
+    args::ValueFlag<int> input_port(parser, "port", "The port to use", {'p', "port"});
+    args::ValueFlag<std::string> input_ip(parser, "ip", "The ip to use", {"ip"});
     try
     {
         parser.ParseCLI(argc, argv);
