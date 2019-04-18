@@ -48,7 +48,7 @@ class WaveServiceImpl final : public WaveService::Service {
                     Elevation* reply) override {
       reply->clear_z();
 
-      size_t max_size = std::min(request->x_size(), request->y_size());
+      const size_t max_size = std::min(request->x_size(), request->y_size());
       for (size_t index = 0; index < max_size; ++index) {
         reply->add_z(- wave_spectrum_.a() * sin(
                           wave_spectrum_.k() * (request->x(index) * cos(wave_spectrum_.psi()) + request->y(index) * sin(wave_spectrum_.psi()))
@@ -64,7 +64,7 @@ class WaveServiceImpl final : public WaveService::Service {
     Status GetElevations(ServerContext* context, const Point* request,
                         ServerWriter<Elevation>* writer) override {
       Elevation elevation;
-      size_t max_size = std::min(request->x_size(), request->y_size());
+      const size_t max_size = std::min(request->x_size(), request->y_size());
       for (double t = request->t_start(); t < request->t_end(); t = t + request->dt()) {
         elevation.clear_z();
         elevation.set_t(t);
