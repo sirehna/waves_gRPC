@@ -99,11 +99,8 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
 foreach(_target
     wave_client wave_server)
     add_executable(${_target} "${_target}.cc"
-        ssc/Exception.cpp
         ${hw_proto_srcs}
         ${hw_grpc_srcs})
-    target_include_directories(${_target}
-        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/ssc)
     target_link_libraries(${_target}
         ${_GRPC_GRPCPP_UNSECURE}
         ${_PROTOBUF_LIBPROTOBUF}

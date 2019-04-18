@@ -22,8 +22,6 @@
 
 #include <args.hxx>
 
-#include "NumericalErrorException.hpp"
-
 #include "wave.grpc.pb.h"
 
 using grpc::Channel;
