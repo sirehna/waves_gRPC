@@ -20,7 +20,7 @@ using wave::WaveService;
 void display_elevations(const std::vector<double>& z, const std::vector<double>& x, const std::vector<double>& y, const double t);
 void display_elevations(const std::vector<double>& z, const std::vector<double>& x, const std::vector<double>& y, const double t)
 {
-    if (z.size() > 0)
+    if (not(z.empty()))
     {
         for (size_t index = 0; index < z.size(); ++index)
         {
@@ -91,7 +91,7 @@ class WaveServiceClient
         }
         Status status = reader->Finish();
 
-        if (!status.ok())
+        if (not(status.ok()))
         {
             std::cout << status.error_code() << ": " << status.error_message() << std::endl;
             std::cout << "WaveService failed." << std::endl;
@@ -146,16 +146,16 @@ int main(int argc, char const * const argv[])
     std::cout << std::endl;
 
     std::cout << "Unary Elevation" << std::endl << std::endl;
-    std::vector<double> x{1.3, 2, 0};
-    std::vector<double> y{2.7, 0.5, 0};
-    double t(0.1);
+    const std::vector<double> x{1.3, 2, 0};
+    const std::vector<double> y{2.7, 0.5, 0};
+    const double t(0.1);
     wave_service.get_elevation(x, y, t);
     std::cout << std::endl;
 
     std::cout << "Server Streaming Elevation" << std::endl << std::endl;
-    double dt(0.1);
-    double t_start(0.0);
-    double t_end(0.25);
+    const double dt(0.1);
+    const double t_start(0.0);
+    const double t_end(0.25);
     wave_service.get_elevations(x, y, dt, t_start, t_end);
     std::cout << std::endl;
 
