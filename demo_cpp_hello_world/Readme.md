@@ -29,15 +29,3 @@ Asynchronous example adapted from https://github.com/grpc/grpc/tree/master/examp
 What's new : the use of `CompletionQueue` API to manage asynchronicity.
 
 `greeter_async_client_loop` loops to repeat the message sent only once by `greeter_async_client`.
-
-## Google tests
-
-```
-$ cd demo_cpp_hello_world
-$ make gtest
-$ cd ..
-```
-
-- Files concerned: `tests.cpp` (`$ make gtest`) and `test_server.cpp` (`$ make test_server`)
-
-`greeter_sync_server` has been divided into `greeter_sync_server` and `greeter_sync_server_main` to use gtest main during tests.
