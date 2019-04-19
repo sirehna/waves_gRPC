@@ -121,18 +121,24 @@ int main(int argc, char const * const argv[])
         std::cout << parser;
         return 0;
     }
-    catch (args::ParseError e)
+    catch (const args::ParseError& e)
     {
         std::cerr << e.what() << std::endl;
         std::cerr << parser;
         return 1;
     }
-    catch (args::ValidationError e)
+    catch (const args::ValidationError& e)
     {
         std::cerr << e.what() << std::endl;
         std::cerr << parser;
         return 1;
     }
+    catch (const std::exception& e)
+    {
+        std::cerr << "An internal error has occurred: " << e.what() << std::endl;
+        return -1;
+    }
+
     std::string port("50051");
     std::string ip("localhost");
     if (input_port)
