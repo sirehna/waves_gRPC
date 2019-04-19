@@ -49,7 +49,7 @@ void display_elevations(const std::vector<double>& z, const std::vector<double>&
 class ElevationServiceClient
 {
     public:
-        ElevationServiceClient(std::shared_ptr<Channel> channel)
+        ElevationServiceClient(const std::shared_ptr<Channel>& channel)
             : stub_(ElevationService::NewStub(channel)) {}
 
         void get_elevation(const std::vector<double>& x, const std::vector<double>& y, const double t)
