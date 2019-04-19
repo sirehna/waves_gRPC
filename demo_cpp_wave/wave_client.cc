@@ -18,6 +18,18 @@ using wave::ElevationRequest;
 using wave::ElevationResponse;
 using wave::ElevationService;
 
+void add_points_to_request(ElevationRequest& request, const std::vector<double>& x, const std::vector<double>& y);
+void add_points_to_request(ElevationRequest& request, const std::vector<double>& x, const std::vector<double>& y)
+{
+    const size_t max_size = std::min(x.size(), y.size());
+    for (size_t index = 0; index < max_size; ++index)
+    {
+        Point* added_point = request.add_points();
+        added_point->set_x(x[index]);
+        added_point->set_y(y[index]);
+    }
+}
+
 void display_elevations(const std::vector<double>& z, const std::vector<double>& x, const std::vector<double>& y, const double t);
 void display_elevations(const std::vector<double>& z, const std::vector<double>& x, const std::vector<double>& y, const double t)
 {
@@ -43,13 +55,7 @@ class ElevationServiceClient
         void get_elevation(const std::vector<double>& x, const std::vector<double>& y, const double t)
         {
             ElevationRequest request;
-            const size_t max_size = std::min(x.size(), y.size());
-            for (size_t index = 0; index < max_size; ++index)
-            {
-                Point* added_point = request.add_points();
-                added_point->set_x(x[index]);
-                added_point->set_y(y[index]);
-            }
+            add_points_to_request(request, x, y);
             request.set_t(t);
 
             ElevationResponse reply;
@@ -72,13 +78,7 @@ class ElevationServiceClient
                             const double dt, const double t_start, const double t_end)
         {
             ElevationRequest request;
-            const size_t max_size = std::min(x.size(), y.size());
-            for (size_t index = 0; index < max_size; ++index)
-            {
-                Point* added_point = request.add_points();
-                added_point->set_x(x[index]);
-                added_point->set_y(y[index]);
-            }
+            add_points_to_request(request, x, y);
             request.set_t_start(t_start);
             request.set_t_end(t_end);
             request.set_dt(dt);

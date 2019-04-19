@@ -16,11 +16,21 @@ using grpc::ServerBuilder;
 using grpc::ServerContext;
 using grpc::ServerWriter;
 using grpc::Status;
+using wave::Point;
 using wave::ElevationRequest;
 using wave::ElevationResponse;
 using wave::ElevationService;
 using wave::FlatDiscreteDirectionalWaveSpectrum;
 
+double compute_elevation(const double x, const double y, const double t, const FlatDiscreteDirectionalWaveSpectrum& wave_spectrum);
+double compute_elevation(const double x, const double y, const double t, const FlatDiscreteDirectionalWaveSpectrum& wave_spectrum)
+{
+    return - wave_spectrum.a() * sin(
+                                        wave_spectrum.k() * (x * cos(wave_spectrum.psi()) + y * sin(wave_spectrum.psi()))
+                                        - wave_spectrum.omega() * t
+                                        + wave_spectrum.phase()
+                                    );
+}
 
 class ElevationServiceImpl final : public ElevationService::Service {
     public:
@@ -32,15 +42,9 @@ class ElevationServiceImpl final : public ElevationService::Service {
         {
             reply->clear_z();
 
-            const size_t max_size = request->points_size();
-            for (size_t index = 0; index < max_size; ++index)
+            for (const Point& point : request->points())
             {
-                reply->add_z(- wave_spectrum_.a() * sin(
-                                    wave_spectrum_.k() * (request->points(index).x() * cos(wave_spectrum_.psi()) + request->points(index).y() * sin(wave_spectrum_.psi()))
-                                    - wave_spectrum_.omega() * request->t()
-                                    + wave_spectrum_.phase()
-                                )
-                            );
+                reply->add_z(compute_elevation(point.x(), point.y(), request->t(), wave_spectrum_));
             }
 
             return Status::OK;
@@ -50,19 +54,13 @@ class ElevationServiceImpl final : public ElevationService::Service {
                             ServerWriter<ElevationResponse>* writer) override
         {
             ElevationResponse elevation;
-            const size_t max_size = request->points_size();
-            for (double t = request->t_start(); t < request->t_end(); t = t + request->dt())
+            for (double t = request->t_start(); t < request->t_end(); t += request->dt())
             {
                 elevation.clear_z();
                 elevation.set_t(t);
-                for (size_t index = 0; index < max_size; ++index)
+                for (const Point& point : request->points())
                 {
-                    elevation.add_z(- wave_spectrum_.a() * sin(
-                                            wave_spectrum_.k() * (request->points(index).x() * cos(wave_spectrum_.psi()) + request->points(index).y() * sin(wave_spectrum_.psi()))
-                                            - wave_spectrum_.omega() * t
-                                            + wave_spectrum_.phase()
-                                        )
-                                    );
+                    elevation.add_z(compute_elevation(point.x(), point.y(), t, wave_spectrum_));
                 }
                 writer->Write(elevation);
             }
