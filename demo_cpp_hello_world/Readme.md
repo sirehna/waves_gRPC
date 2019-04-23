@@ -1,12 +1,12 @@
 # Helloworld CPP Demo with GRPC and Docker
 
 ## How to run it
+With docker : `$ make test`
+with docker-compose :
 ```
-$ cd demo_cpp_hello_world
-$ make test
-$ cd ..
+$ make dc_test
+$ make dc_stop
 ```
-
 The client sends a request to the server with parameter "world", the server prefixes it with "Hello ", and sends it back.
 
 ## .proto file

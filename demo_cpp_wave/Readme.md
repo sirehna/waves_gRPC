@@ -2,9 +2,8 @@
 
 ## How to run it
 ```
-$ cd demo_cpp_wave
-$ make test
-$ cd ..
+$ make dc_test
+$ make dc_stop
 ```
 
 The client sends a request to the server with parameters x, y and t, the server computes the elevation z (using hard-coded discrete wave spectrum values), and sends it back.
