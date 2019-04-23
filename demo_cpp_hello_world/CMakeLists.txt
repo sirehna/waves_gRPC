@@ -94,9 +94,10 @@ add_custom_command(
         "${hw_proto}"
       DEPENDS "${hw_proto}")
 
-# Include generated *.pb.h files
+
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
+include_directories(SYSTEM "${CMAKE_CURRENT_SOURCE_DIR}/../third_party")
 
 # Targets greeter_[async_](client|server)
 foreach(_target
