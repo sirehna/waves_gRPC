@@ -16,6 +16,7 @@
  *
  */
 
+#include <chrono>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -116,7 +117,7 @@ int main(int argc, char const * const argv[])
         std::cerr << parser;
         return 1;
     }
-    std::string port("9002");
+    std::string port("50051");
     std::string ip("localhost");
     if (input_port) { std::cout << "input_port: " << args::get(input_port) << std::endl; port = std::to_string(args::get(input_port));}
     if (input_ip) { std::cout << "input_ip: " << args::get(input_ip) << std::endl; ip = args::get(input_ip); }
@@ -126,6 +127,7 @@ int main(int argc, char const * const argv[])
     // localhost at port 50051). We indicate that the channel isn't authenticated
     // (use of InsecureChannelCredentials()).
     std::cout << "Sync Client" << std::endl;
+    std::cout << "Connecting to " << ip << ":" << port << std::endl;
     // GreeterClient greeter(grpc::CreateChannel(
     //     "grpc_net:50051", grpc::InsecureChannelCredentials()));
     //GreeterClient greeter(grpc::CreateChannel(
@@ -134,8 +136,19 @@ int main(int argc, char const * const argv[])
         ip + ":" + port, grpc::InsecureChannelCredentials()));
       // "172.19.0.2:50051", grpc::InsecureChannelCredentials()));
     std::string user("world");
+    auto start = std::chrono::system_clock::now();
     std::string reply = greeter.SayHello(user);
-    std::cout << "Greeter received: " << reply << std::endl;
-
-    return 0;
+    auto end = std::chrono::system_clock::now();
+    std::chrono::duration<double> diff = end-start;
+    std::cout << diff.count() << " s\n";
+    if (reply == "RPC failed")
+    {
+        std::cout << "Connection failed " << std::endl;
+        return 1;
+    }
+    else
+    {
+        std::cout << "Greeter received: " << reply << std::endl;
+        return 0;
+    }
 }

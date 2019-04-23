@@ -1,6 +1,60 @@
 .PHONY: all build cmake stop test
+.PHONY: dc_test dc_clean
+.PHONY: all_clean
 
-all: build
+# make test    -> performs grpc test with docker
+# make dc_test -> performs grpc test with docker-compose, it will
+#                 create docker base image
+#                 build executables in the build directory,
+#                 create docker deployment images,
+#                 setup docker compose in detached mode,
+#                 wait for client to end up,
+#                 check for client return code
+#
+# make all_clean deletes build directory and deletes docker images
+
+all: dc_test
+
+all_clean: clean dc_clean
+all_stop: stop dc_stop
+
+cmake:
+	docker build -t debian_grpc .
+	mkdir -p build_debian
+	docker run --rm -v $(shell pwd):/shared -u $(shell id -u):$(shell id -g) -w /shared/build_debian debian_grpc \
+	    cmake -Wno-dev \
+	          -G Ninja \
+	          -DCMAKE_BUILD_TYPE=Relase \
+	          -DCMAKE_INSTALL_PREFIX:PATH=/opt/grpc_demo \
+	          /shared
+
+build: cmake
+	docker run --rm -v $(shell pwd):/shared -u $(shell id -u):$(shell id -g) -w /shared/build_debian debian_grpc ninja
+
+docker_server:build
+	cp build_debian/greeter_sync_server docker_sync_server/.
+	cd docker_sync_server && docker build . -t docker_sync_server && rm greeter_sync_server && cd ..
+
+docker_client:build
+	cp build_debian/greeter_sync_client docker_sync_client/.
+	cd docker_sync_client && docker build . -t docker_sync_client && rm greeter_sync_client && cd ..
+
+docker_images:docker_server docker_client
+	echo "Deploying server and client"
+
+dc_test:docker_images
+	cd compose_demo && docker-compose up -d
+	cd compose_demo && sleep 0.5 && while [ -z "`docker-compose ps | grep client | grep Exit`" ]; do echo "Client terminated";done
+	cd compose_demo && result=`docker-compose ps | grep client | grep "Exit 0"` || true && echo "$${result}" && if [ -n "$${result}" ]; then echo "Success"; else echo "Failure" && docker-compose logs client;  fi
+
+dc_stop_demo:
+	cd compose_demo && docker-compose stop && docker-compose down && cd ..
+
+dc_stop:dc_stop_demo
+	echo "Stopping docker compose"
+
+dc_clean:dc_stop
+	docker rmi -f docker_sync_server docker_sync_client
 
 test: build run_sync_client run_async_client stop
 	@echo "Building apps, building network, running servers, and running clients"
@@ -20,19 +74,6 @@ archive:
 	    --exclude='$(shell basename $(cwd))/report*' \
 	    $(shell basename $(cwd)) && \
 	cd $(cwd)
-
-build: cmake
-	docker run --rm -v $(shell pwd):/shared -u $(shell id -u):$(shell id -g) -w /shared/build_debian debian_grpc ninja
-
-cmake:
-	docker build -t debian_grpc .
-	mkdir -p build_debian
-	docker run --rm -v $(shell pwd):/shared -u $(shell id -u):$(shell id -g) -w /shared/build_debian debian_grpc \
-	    cmake -Wno-dev \
-	          -G Ninja \
-	          -DCMAKE_BUILD_TYPE=Relase \
-	          -DCMAKE_INSTALL_PREFIX:PATH=/opt/grpc_demo \
-	          /shared
 
 network:
 	if docker network list | grep grpc_net > /dev/null ; then echo ""; else docker network create grpc_net; fi;

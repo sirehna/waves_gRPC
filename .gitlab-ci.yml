@@ -21,5 +21,6 @@ build:
 test:
    stage: test
    script:
-     - cd demo_cpp_hello_world && make test && cd ..
+     - cd demo_cpp_hello_world && make test && make stop && cd ..
+     - cd demo_cpp_hello_world && make dc_test && make dc_stop && cd ..
 
