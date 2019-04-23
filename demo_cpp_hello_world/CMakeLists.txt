@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 project(HelloWorld C CXX)
 
-SET(THIRDPARTY_PREFIX "" CACHE STRING "String prefix to indicate third_party location. Use .. whith local compilation")
+SET(THIRDPARTY_PREFIX "" CACHE STRING "String prefix to indicate third_party location. Use .. with local compilation")
 
 if(NOT MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
