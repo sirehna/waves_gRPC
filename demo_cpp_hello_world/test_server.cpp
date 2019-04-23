@@ -2,11 +2,7 @@
 #include <grpcpp/grpcpp.h>
 #include "greeter_sync_server.hh"
 
-#ifdef BAZEL_BUILD
-#include "examples/protos/helloworld.grpc.pb.h"
-#else
 #include "helloworld.grpc.pb.h"
-#endif
 
 class ServerDemo : public ::testing::Test
 {
