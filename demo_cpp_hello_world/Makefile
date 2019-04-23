@@ -43,9 +43,17 @@ docker_images:docker_server docker_client
 	echo "Deploying server and client"
 
 dc_test:docker_images
-	cd compose_demo && docker-compose up -d
-	cd compose_demo && sleep 0.5 && while [ -z "`docker-compose ps | grep client | grep Exit`" ]; do echo "Client terminated";done
-	cd compose_demo && result=`docker-compose ps | grep client | grep "Exit 0"` || true && echo "$${result}" && if [ -n "$${result}" ]; then echo "Success"; else echo "Failure" && docker-compose logs client;  fi
+	cd compose_demo && docker-compose up --force-recreate -d
+	cd compose_demo && docker-compose logs -t
+	cd compose_demo && sleep 0.5 && \
+	    while [ -z "`docker-compose ps | grep client | grep Exit`" ]; do echo "Client terminated"; done
+	cd compose_demo && \
+	    result=`docker-compose ps | grep client | grep "Exit 0"` || true && \
+	    echo "$${result}" && \
+	    if [ -n "$${result}" ]; \
+	       then echo "Success"; \
+	       else echo "Failure" && docker-compose logs client; \
+	       fi
 
 dc_stop_demo:
 	cd compose_demo && docker-compose stop && docker-compose down && cd ..
