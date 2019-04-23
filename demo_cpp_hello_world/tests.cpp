@@ -8,4 +8,3 @@ TEST_F(Demo, simple_demo)
 {
     ASSERT_EQ("NED", "NED");
 }
-
