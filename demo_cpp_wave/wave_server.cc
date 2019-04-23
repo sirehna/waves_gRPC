@@ -20,6 +20,7 @@ using grpc::ServerWriter;
 using grpc::Status;
 using wave::Point;
 using wave::ElevationRequest;
+using wave::ElevationPoint;
 using wave::ElevationResponse;
 using wave::ElevationService;
 using wave::FlatDiscreteDirectionalWaveSpectrum;
@@ -48,11 +49,14 @@ class ElevationServiceImpl final : public ElevationService::Service {
         Status GetElevation(ServerContext* context, const ElevationRequest* request,
                             ElevationResponse* reply) override
         {
-            reply->clear_z();
-
+            reply->clear_elevation_points();
+            reply->set_t(request->t());
             for (const Point& point : request->points())
             {
-                reply->add_z(compute_elevation(point.x(), point.y(), request->t(), wave_spectrum_));
+                ElevationPoint* added_elevation_point = reply->add_elevation_points();
+                added_elevation_point->set_x(point.x());
+                added_elevation_point->set_y(point.y());
+                added_elevation_point->set_z(compute_elevation(point.x(), point.y(), request->t(), wave_spectrum_));
             }
 
             return Status::OK;
@@ -64,11 +68,14 @@ class ElevationServiceImpl final : public ElevationService::Service {
             ElevationResponse elevation;
             for (double t = request->t_start(); t < request->t_end(); t += request->dt())
             {
-                elevation.clear_z();
+                elevation.clear_elevation_points();
                 elevation.set_t(t);
                 for (const Point& point : request->points())
                 {
-                    elevation.add_z(compute_elevation(point.x(), point.y(), t, wave_spectrum_));
+                    ElevationPoint* added_elevation_point = elevation.add_elevation_points();
+                    added_elevation_point->set_x(point.x());
+                    added_elevation_point->set_y(point.y());
+                    added_elevation_point->set_z(compute_elevation(point.x(), point.y(), t, wave_spectrum_));
                 }
                 writer->Write(elevation);
             }

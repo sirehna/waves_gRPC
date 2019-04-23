@@ -31,10 +31,18 @@ message ElevationRequest
     double dt = 5;
 }
 
+// The elevation and associated point coordinates
+message ElevationPoint
+{
+    double z = 1;
+    double x = 2;
+    double y = 3;
+}
+
 // The response message containing the elevation
 message ElevationResponse
 {
-    repeated double z = 1;
+    repeated ElevationPoint elevation_points = 1;
     double t = 2;
 }
 

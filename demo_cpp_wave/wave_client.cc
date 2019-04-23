@@ -16,6 +16,7 @@ using grpc::ClientReader;
 using grpc::Status;
 using wave::Point;
 using wave::ElevationRequest;
+using wave::ElevationPoint;
 using wave::ElevationResponse;
 using wave::ElevationService;
 
@@ -31,14 +32,14 @@ void add_points_to_request(ElevationRequest& request, const std::vector<double>&
     }
 }
 
-void display_elevations(const std::vector<double>& z, const std::vector<double>& x, const std::vector<double>& y, const double t);
-void display_elevations(const std::vector<double>& z, const std::vector<double>& x, const std::vector<double>& y, const double t)
+void display_elevations(const ElevationResponse& elevation_response);
+void display_elevations(const ElevationResponse& elevation_response)
 {
-    if (not(z.empty()))
+    if (elevation_response.elevation_points_size() > 0)
     {
-        for (size_t index = 0; index < z.size(); ++index)
+        for (const ElevationPoint& elevation_point : elevation_response.elevation_points())
         {
-            std::cout << "ElevationService (x: " << x[index] << ", y: " << y[index] << ", t: " << t <<  ") received: " << z[index] << std::endl;
+            std::cout << "ElevationService (x: " << elevation_point.x() << ", y: " << elevation_point.y() << ", t: " << elevation_response.t() <<  ") received: " << elevation_point.z() << std::endl;
         }
     }
     else
@@ -65,8 +66,7 @@ class ElevationServiceClient
             Status status = stub_->GetElevation(&context, request, &reply);
             if (status.ok())
             {
-                std::vector<double> z(reply.z().begin(), reply.z().end());
-                display_elevations(z, x, y, t);
+                display_elevations(reply);
             }
             else
             {
@@ -84,14 +84,13 @@ class ElevationServiceClient
             request.set_t_end(t_end);
             request.set_dt(dt);
 
-            ElevationResponse elevation;
+            ElevationResponse elevationResponse;
             ClientContext context;
 
             std::unique_ptr<ClientReader<ElevationResponse> > reader(stub_->GetElevations(&context, request));
-            while (reader->Read(&elevation))
+            while (reader->Read(&elevationResponse))
             {
-                std::vector<double> z(elevation.z().begin(), elevation.z().end());
-                display_elevations(z, x, y, elevation.t());
+                display_elevations(elevationResponse);
             }
             Status status = reader->Finish();
 
