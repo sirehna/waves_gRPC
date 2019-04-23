@@ -2,6 +2,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <chrono>
 
 #include <grpcpp/grpcpp.h>
 
@@ -154,18 +155,26 @@ int main(int argc, char const * const argv[])
         ip + ":" + port, grpc::InsecureChannelCredentials()));
     std::cout << std::endl;
 
+    auto start = std::chrono::system_clock::now();
     std::cout << "Unary Elevation" << std::endl << std::endl;
     const std::vector<double> x{1.3, 2, 0};
     const std::vector<double> y{2.7, 0.5, 0};
     const double t(0.1);
     elevation_service.get_elevation(x, y, t);
+    auto end = std::chrono::system_clock::now();
+    std::chrono::duration<double> diff = end-start;
+    std::cout << diff.count() << " s\n";
     std::cout << std::endl;
 
+    start = std::chrono::system_clock::now();
     std::cout << "Server Streaming Elevation" << std::endl << std::endl;
     const double dt(0.1);
     const double t_start(0.0);
     const double t_end(0.25);
     elevation_service.get_elevations(x, y, dt, t_start, t_end);
+    end = std::chrono::system_clock::now();
+    diff = end-start;
+    std::cout << diff.count() << " s\n";
     std::cout << std::endl;
 
     return 0;
