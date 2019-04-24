@@ -23,7 +23,7 @@
 #include <grpcpp/grpcpp.h>
 #include <grpc/support/log.h>
 
-#include "args/args.hxx"
+#include "args.hxx"
 
 #include "helloworld.grpc.pb.h"
 
