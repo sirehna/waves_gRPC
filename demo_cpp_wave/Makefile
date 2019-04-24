@@ -15,7 +15,12 @@ all: dc_test
 cmake:
 	docker build -t debian_grpc .
 	mkdir -p build_debian
-	docker run --rm -v $(shell pwd):/shared -u $(shell id -u):$(shell id -g) -w /shared/build_debian debian_grpc \
+	docker run --rm \
+	    -v $(shell pwd):/shared \
+	    -v $(shell pwd)/../third_party:/third_party \
+	    -u $(shell id -u):$(shell id -g) \
+	    -w /shared/build_debian \
+	    debian_grpc \
 	    cmake -Wno-dev \
 	          -G Ninja \
 	          -DCMAKE_BUILD_TYPE=Relase \
@@ -23,7 +28,13 @@ cmake:
 	          /shared
 
 build: cmake
-	docker run --rm -v $(shell pwd):/shared -u $(shell id -u):$(shell id -g) -w /shared/build_debian debian_grpc ninja
+	docker run --rm \
+	    -v $(shell pwd):/shared \
+	    -v $(shell pwd)/../third_party:/third_party \
+	    -u $(shell id -u):$(shell id -g) \
+	    -w /shared/build_debian \
+	    debian_grpc \
+	    ninja
 
 docker_server:build
 	cp build_debian/wave_server docker_wave_server/.
@@ -32,6 +43,10 @@ docker_server:build
 docker_client:build
 	cp build_debian/wave_client docker_wave_client/.
 	cd docker_wave_client && docker build . -t docker_wave_client && rm wave_client && cd ..
+
+docker_test:build
+	cp build_debian/wave_test docker_wave_test/.
+	cd docker_wave_test && docker build . -t docker_wave_test && rm wave_test && cd ..
 
 docker_images:docker_server docker_client
 	echo "Deploying server and client"
@@ -49,10 +64,24 @@ dc_test:docker_images
 	       else echo "Failure" && docker-compose logs client; \
 	       fi
 
+dc_gtest:docker_server docker_test
+	cd compose_test && docker-compose up --force-recreate -d
+	cd compose_test && docker-compose logs -t
+	cd compose_test && \
+	    result=`docker-compose ps | grep test | grep "Exit 0"` || true && \
+	    echo "$${result}" && \
+	    if [ -n "$${result}" ]; \
+	       then echo "Success"; \
+	       else echo "Failure" && docker-compose logs test; \
+	       fi
+
 dc_stop_demo:
 	cd compose_demo && docker-compose stop && docker-compose down && cd ..
 
-dc_stop:dc_stop_demo
+dc_stop_test:
+	cd compose_demo && docker-compose stop && docker-compose down && cd ..
+
+dc_stop:dc_stop_demo dc_stop_test
 	echo "Stopping docker compose"
 
 dc_clean:dc_stop

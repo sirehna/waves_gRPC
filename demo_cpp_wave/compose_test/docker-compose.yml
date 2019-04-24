@@ -1,0 +1,12 @@
+version: '3'
+services:
+  server:
+    image: "docker_wave_server:latest"
+    ports:
+     - "50051:50051"
+    command: ["/usr/wave_server", "--spectrum", "t"]
+  test:
+    image: "docker_wave_test:latest"
+    depends_on:
+      - "server"
+    command: ["/usr/wait-for-it.sh", "server:50051", "--", "/usr/wave_test"]

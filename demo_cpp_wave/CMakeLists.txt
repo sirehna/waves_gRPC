@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 2.8)
 
 project(Wave C CXX)
 
+SET(THIRDPARTY_PREFIX "" CACHE STRING
+    "String prefix to indicate third_party location.
+      - Use .. with local compilation
+      - Leave this string empty if building with docker that mounts ../third_party as a volume
+    ")
+
 if(NOT MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 else()
@@ -106,3 +112,19 @@ foreach(_target
         ${_PROTOBUF_LIBPROTOBUF}
         pthread)
 endforeach()
+
+add_executable(wave_test
+    wave_test.cc
+    wave_client.cc
+    ${hw_proto_srcs}
+    ${hw_grpc_srcs}
+    ${THIRDPARTY_PREFIX}/third_party/google_test/googletest/src/gtest-all.cc
+    ${THIRDPARTY_PREFIX}/third_party/google_test/googletest/src/gtest_main.cc
+)
+target_include_directories(wave_test SYSTEM PRIVATE
+    ${THIRDPARTY_PREFIX}/third_party/google_test/googletest
+    ${THIRDPARTY_PREFIX}/third_party/google_test/googletest/include)
+target_link_libraries(wave_test
+    ${_GRPC_GRPCPP_UNSECURE}
+    ${_PROTOBUF_LIBPROTOBUF}
+    pthread)
