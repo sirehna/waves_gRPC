@@ -101,7 +101,6 @@ add_custom_command(
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
 
-# Targets wave_(client|server)
 add_executable(wave_server
     wave_server.cc
     ${hw_proto_srcs}
@@ -110,6 +109,8 @@ target_link_libraries(wave_server
     ${_GRPC_GRPCPP_UNSECURE}
     ${_PROTOBUF_LIBPROTOBUF}
     pthread)
+target_include_directories(wave_server SYSTEM PRIVATE
+    ${THIRDPARTY_PREFIX}/third_party/args)
 
 add_executable(wave_client
     wave_client.cc
@@ -120,6 +121,9 @@ target_link_libraries(wave_client
     ${_GRPC_GRPCPP_UNSECURE}
     ${_PROTOBUF_LIBPROTOBUF}
     pthread)
+target_include_directories(wave_client SYSTEM PRIVATE
+    ${THIRDPARTY_PREFIX}/third_party/args)
+
 
 add_executable(wave_test
     wave_test.cc
