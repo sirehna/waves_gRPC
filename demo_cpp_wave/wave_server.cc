@@ -66,8 +66,12 @@ class ElevationServiceImpl final : public ElevationService::Service {
                             ServerWriter<ElevationResponse>* writer) override
         {
             ElevationResponse elevation;
-            for (double t = request->t_start(); t < request->t_end(); t += request->dt())
+            if (request->dt() > 0 && request->t_end() - request->t_start() > 0)
             {
+                const double count = (request->t_end() - request->t_start()) / request->dt();
+                for (size_t index = 0; index <= count; ++index)
+            {
+                    const double t = request->t_start() + index * request->dt();
                 elevation.clear_elevation_points();
                 elevation.set_t(t);
                 for (const Point& point : request->points())
@@ -78,6 +82,7 @@ class ElevationServiceImpl final : public ElevationService::Service {
                     added_elevation_point->set_z(compute_elevation(point.x(), point.y(), t, wave_spectrum_));
                 }
                 writer->Write(elevation);
+            }
             }
             return Status::OK;
         }

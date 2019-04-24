@@ -66,7 +66,7 @@ class ElevationServiceClient
             Status status = stub_->GetElevation(&context, request, &reply);
             if (status.ok())
             {
-                // display_elevations(reply);
+                display_elevations(reply);
             }
             else
             {
@@ -90,7 +90,7 @@ class ElevationServiceClient
             std::unique_ptr<ClientReader<ElevationResponse> > reader(stub_->GetElevations(&context, request));
             while (reader->Read(&elevationResponse))
             {
-                // display_elevations(elevationResponse);
+                display_elevations(elevationResponse);
             }
             Status status = reader->Finish();
 
