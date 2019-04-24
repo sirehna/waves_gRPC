@@ -25,7 +25,7 @@
 
 #include <grpcpp/grpcpp.h>
 
-#include <args.hxx>
+#include "args.hxx"
 
 #include "helloworld.grpc.pb.h"
 
