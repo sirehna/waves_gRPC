@@ -79,7 +79,7 @@ dc_stop_demo:
 	cd compose_demo && docker-compose stop && docker-compose down && cd ..
 
 dc_stop_test:
-	cd compose_demo && docker-compose stop && docker-compose down && cd ..
+	cd compose_test && docker-compose stop && docker-compose down && cd ..
 
 dc_stop:dc_stop_demo dc_stop_test
 	echo "Stopping docker compose"
