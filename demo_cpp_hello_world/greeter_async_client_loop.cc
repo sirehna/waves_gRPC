@@ -24,7 +24,7 @@
 #include <grpc/support/log.h>
 #include <thread>
 
-#include <args.hxx>
+#include "args/args.hxx"
 
 #include "helloworld.grpc.pb.h"
 
