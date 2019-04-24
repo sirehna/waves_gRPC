@@ -124,13 +124,7 @@ target_link_libraries(greeter_sync_server
     pthread)
 
 
-MESSAGE(STATUS "CMAKE_CURRENT_SOURCE_DIR = ${CMAKE_CURRENT_SOURCE_DIR}")
-# add_executable(my_test
-#     ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/google_test/googletest/src/gtest-all.cc
-#     ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/google_test/googletest/src/gtest_main.cc
-#     )
-# target_include_directories(my_test SYSTEM PRIVATE
-#     ${CMAKE_CURRENT_SOURCE_DIR}/../third_party/google_test/googletest/include)
+message(STATUS "CMAKE_CURRENT_SOURCE_DIR = ${CMAKE_CURRENT_SOURCE_DIR}")
 add_executable(my_test
     tests.cpp
     ${THIRDPARTY_PREFIX}/third_party/google_test/googletest/src/gtest-all.cc
