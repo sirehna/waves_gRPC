@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 2.8)
 
 project(HelloWorld C CXX)
 
+SET(THIRDPARTY_PREFIX "" CACHE STRING
+    "String prefix to indicate third_party location.
+      - Use .. with local compilation
+      - Leave this string empty if building with docker that mounts ../third_party as a volume
+    ")
+
 if(NOT MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 else()
@@ -94,8 +100,9 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
 
 # Targets greeter_[async_](client|server)
 foreach(_target
-    greeter_sync_client greeter_sync_server
-    greeter_async_client greeter_async_server)
+
+    greeter_async_client
+    greeter_async_server)
     add_executable(${_target} "${_target}.cc"
         ${hw_proto_srcs}
         ${hw_grpc_srcs})
@@ -104,3 +111,39 @@ foreach(_target
         ${_PROTOBUF_LIBPROTOBUF}
         pthread)
 endforeach()
+
+add_executable(greeter_sync_client
+    greeter_sync_client.cc
+    greeter_sync_client_main.cc
+    ${hw_proto_srcs}
+    ${hw_grpc_srcs})
+target_link_libraries(greeter_sync_client
+    ${_GRPC_GRPCPP_UNSECURE}
+    ${_PROTOBUF_LIBPROTOBUF}
+    pthread)
+
+add_executable(greeter_sync_server
+    greeter_sync_server.cc
+    greeter_sync_server_main.cc
+    ${hw_proto_srcs}
+    ${hw_grpc_srcs})
+target_link_libraries(greeter_sync_server
+    ${_GRPC_GRPCPP_UNSECURE}
+    ${_PROTOBUF_LIBPROTOBUF}
+    pthread)
+
+add_executable(test_server
+    test_server.cpp
+    greeter_sync_client.cc
+    ${hw_proto_srcs}
+    ${hw_grpc_srcs}
+    ${THIRDPARTY_PREFIX}/third_party/google_test/googletest/src/gtest-all.cc
+    ${THIRDPARTY_PREFIX}/third_party/google_test/googletest/src/gtest_main.cc
+)
+target_include_directories(test_server SYSTEM PRIVATE
+    ${THIRDPARTY_PREFIX}/third_party/google_test/googletest
+    ${THIRDPARTY_PREFIX}/third_party/google_test/googletest/include)
+target_link_libraries(test_server
+    ${_GRPC_GRPCPP_UNSECURE}
+    ${_PROTOBUF_LIBPROTOBUF}
+    pthread)

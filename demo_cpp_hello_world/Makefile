@@ -21,7 +21,12 @@ all_stop: stop dc_stop
 cmake:
 	docker build -t debian_grpc .
 	mkdir -p build_debian
-	docker run --rm -v $(shell pwd):/shared -u $(shell id -u):$(shell id -g) -w /shared/build_debian debian_grpc \
+	docker run --rm \
+	    -v $(shell pwd):/shared \
+	    -v $(shell pwd)/../third_party:/third_party \
+	    -u $(shell id -u):$(shell id -g) \
+	    -w /shared/build_debian \
+	    debian_grpc \
 	    cmake -Wno-dev \
 	          -G Ninja \
 	          -DCMAKE_BUILD_TYPE=Relase \
@@ -29,7 +34,13 @@ cmake:
 	          /shared
 
 build: cmake
-	docker run --rm -v $(shell pwd):/shared -u $(shell id -u):$(shell id -g) -w /shared/build_debian debian_grpc ninja
+	docker run --rm \
+	    -v $(shell pwd):/shared \
+	    -v $(shell pwd)/../third_party:/third_party \
+	    -u $(shell id -u):$(shell id -g) \
+	    -w /shared/build_debian \
+	    debian_grpc \
+	    ninja
 
 docker_server:build
 	cp build_debian/greeter_sync_server docker_sync_server/.
@@ -38,6 +49,10 @@ docker_server:build
 docker_client:build
 	cp build_debian/greeter_sync_client docker_sync_client/.
 	cd docker_sync_client && docker build . -t docker_sync_client && rm greeter_sync_client && cd ..
+
+docker_test:build
+	cp build_debian/test_server docker_sync_test/.
+	cd docker_sync_test && docker build . -t docker_sync_test && rm test_server && cd ..
 
 docker_images:docker_server docker_client
 	echo "Deploying server and client"
@@ -55,13 +70,27 @@ dc_test:docker_images
 	       else echo "Failure" && docker-compose logs client; \
 	       fi
 
+dc_gtest: docker_server docker_test
+	cd compose_test && docker-compose up --force-recreate -d
+	cd compose_test && docker-compose logs -t
+	cd compose_test && \
+	    result=`docker-compose ps | grep test | grep "Exit 0"` || true && \
+	    echo "$${result}" && \
+	    if [ -n "$${result}" ]; \
+	       then echo "Success"; \
+	       else echo "Failure" && docker-compose logs test; \
+	       fi
+
 dc_stop_demo:
 	cd compose_demo && docker-compose stop && docker-compose down && cd ..
 
-dc_stop:dc_stop_demo
+dc_stop_test:
+	cd compose_test && docker-compose stop && docker-compose down && cd ..
+
+dc_stop: dc_stop_demo dc_stop_test
 	echo "Stopping docker compose"
 
-dc_clean:dc_stop
+dc_clean: dc_stop
 	docker rmi -f docker_sync_server docker_sync_client
 
 test: build run_sync_client run_async_client stop
@@ -86,7 +115,7 @@ archive:
 network:
 	if docker network list | grep grpc_net > /dev/null ; then echo ""; else docker network create grpc_net; fi;
 
-run_sync_server:network
+run_sync_server: network
 	@if docker ps | grep grpc_sync_server > /dev/null ; \
 	    then \
 	    echo ""; \
@@ -104,7 +133,8 @@ run_sync_server:network
 	        ./greeter_sync_server; \
 	    fi;
 
-run_sync_client:run_sync_server
+run_sync_client: run_sync_server
+	sleep 1
 	docker run \
 	    --net=grpc_net \
 	    --name grpc_sync_client \
@@ -117,7 +147,7 @@ run_sync_client:run_sync_server
 	    --ip `docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' grpc_sync_server` \
 	    --port 50051
 
-run_sync_client_debug:run_sync_server
+run_sync_client_debug: run_sync_server
 	docker run \
 	    --net=grpc_net \
 	    --name grpc_sync_client \
@@ -157,7 +187,7 @@ get_server_ip_from_servers:
 	    docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' grpc_async_server; \
 	    fi;
 
-run_async_server:network build
+run_async_server: network build
 	@if docker ps | grep grpc_async_server > /dev/null ; \
 	    then \
 	    echo ""; \
@@ -174,7 +204,7 @@ run_async_server:network build
 	            ./greeter_async_server; \
 	    fi;
 
-run_async_client:run_async_server
+run_async_client: run_async_server
 	docker run --net=grpc_net \
 	        --name grpc_async_client \
 	        -p 50052:50052 \
@@ -188,7 +218,7 @@ run_async_client:run_async_server
 	        --port 50053
 
 
-run_async_client_debug:run_async_server
+run_async_client_debug: run_async_server
 	docker run --net=grpc_net \
 	        --name grpc_async_client \
 	        -p 50052:50052 \
@@ -202,5 +232,3 @@ run_async_client_debug:run_async_server
 	                        --ip `docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' grpc_async_server` \
 	                        --port 50053"
 	        #/bin/sh -c "export GRPC_TRACE=all && export GRPC_VERBOSITY=DEBUG && ./greeter_async_client"
-
-

@@ -1,7 +1,14 @@
 stages:
+  - git_submodule
   - lint
   - build
   - test
+
+git_submodule:
+   stage: git_submodule
+   script:
+     - git submodule sync --recursive
+     - git submodule update --init --recursive
 
 lint:
    stage: lint
@@ -22,5 +29,5 @@ test:
    stage: test
    script:
      - cd demo_cpp_hello_world && make test && make stop && cd ..
+     - cd demo_cpp_hello_world && make dc_gtest && make dc_stop && cd ..
      - cd demo_cpp_hello_world && make dc_test && make dc_stop && cd ..
-
