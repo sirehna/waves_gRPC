@@ -4,7 +4,7 @@ services:
     image: "docker_wave_server:latest"
     ports:
      - "50051:50051"
-    command: ["/usr/wave_server", "--spectrum", "t"]
+    command: ["/usr/wave_server", "--spectrum", "y"]
   client:
     image: "docker_wave_client:latest"
     depends_on:

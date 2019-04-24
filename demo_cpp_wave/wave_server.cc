@@ -70,19 +70,19 @@ class ElevationServiceImpl final : public ElevationService::Service {
             {
                 const double count = (request->t_end() - request->t_start()) / request->dt();
                 for (size_t index = 0; index <= count; ++index)
-            {
-                    const double t = request->t_start() + index * request->dt();
-                elevation.clear_elevation_points();
-                elevation.set_t(t);
-                for (const Point& point : request->points())
                 {
-                    ElevationPoint* added_elevation_point = elevation.add_elevation_points();
-                    added_elevation_point->set_x(point.x());
-                    added_elevation_point->set_y(point.y());
-                    added_elevation_point->set_z(compute_elevation(point.x(), point.y(), t, wave_spectrum_));
+                    const double t = request->t_start() + index * request->dt();
+                    elevation.clear_elevation_points();
+                    elevation.set_t(t);
+                    for (const Point& point : request->points())
+                    {
+                        ElevationPoint* added_elevation_point = elevation.add_elevation_points();
+                        added_elevation_point->set_x(point.x());
+                        added_elevation_point->set_y(point.y());
+                        added_elevation_point->set_z(compute_elevation(point.x(), point.y(), t, wave_spectrum_));
+                    }
+                    writer->Write(elevation);
                 }
-                writer->Write(elevation);
-            }
             }
             return Status::OK;
         }
@@ -148,7 +148,7 @@ int main(int argc, char** argv)
 {
     args::ArgumentParser parser("This is a test grpc server demo program.", "Enjoy.");
     args::HelpFlag help(parser, "help", "Display this help menu", {'h', "help"});
-    args::ValueFlag<std::string> input_use_full_spectrum(parser, "spectrum", "'t' if you wish to use a 128 line discrete wave spectrum, anything else if you want a 1 line one.", {'s', "spectrum"});
+    args::ValueFlag<std::string> input_use_full_spectrum(parser, "spectrum", "'y' if you wish to use a 128 line discrete wave spectrum, anything else if you want a 1 line one.", {'s', "spectrum"});
     try
     {
         parser.ParseCLI(argc, argv);
@@ -179,8 +179,8 @@ int main(int argc, char** argv)
     bool use_full_spectrum(false);
     if (input_use_full_spectrum)
     {
-      std::cout << "use_full_spectrum: " << args::get(input_use_full_spectrum) << std::endl;
-      use_full_spectrum = args::get(input_use_full_spectrum) == "t";
+      use_full_spectrum = args::get(input_use_full_spectrum) == "y";
+      std::cout << "use full wave spectrum: " << (use_full_spectrum ? "yes" : "no") << std::endl;
     }
 
     FlatDiscreteDirectionalWaveSpectrum wave_spectrum;
