@@ -134,7 +134,7 @@ target_link_libraries(greeter_sync_server
 
 add_executable(test_server
     test_server.cpp
-    greeter_sync_server.cc
+    greeter_sync_client.cc
     ${hw_proto_srcs}
     ${hw_grpc_srcs}
     ${THIRDPARTY_PREFIX}/third_party/google_test/googletest/src/gtest-all.cc
