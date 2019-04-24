@@ -3,9 +3,8 @@
 #include <vector>
 #include <string>
 #include <chrono>
-#include <args.hxx>
 #include <grpcpp/grpcpp.h>
-
+#include "args.hxx"
 #include "wave_client.hh"
 
 int main(int argc, char const * const argv[])
