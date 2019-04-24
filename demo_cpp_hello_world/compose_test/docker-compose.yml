@@ -1,0 +1,11 @@
+version: '3'
+services:
+  server:
+    image: "docker_sync_server:latest"
+    ports:
+     - "50051:50051"
+  test:
+    image: "docker_sync_test:latest"
+    depends_on:
+      - "server"
+    command: ["/usr/wait-for-it.sh", "server:50051", "--", "/usr/test_server"]
