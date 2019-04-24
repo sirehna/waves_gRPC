@@ -111,6 +111,8 @@ foreach(_target
         ${_PROTOBUF_LIBPROTOBUF}
         pthread)
 endforeach()
+target_include_directories(greeter_async_client SYSTEM PRIVATE
+    ${THIRDPARTY_PREFIX}/third_party/args)
 
 add_executable(greeter_sync_client
     greeter_sync_client.cc
@@ -121,6 +123,8 @@ target_link_libraries(greeter_sync_client
     ${_GRPC_GRPCPP_UNSECURE}
     ${_PROTOBUF_LIBPROTOBUF}
     pthread)
+target_include_directories(greeter_sync_client SYSTEM PRIVATE
+    ${THIRDPARTY_PREFIX}/third_party/args)
 
 add_executable(greeter_sync_server
     greeter_sync_server.cc
