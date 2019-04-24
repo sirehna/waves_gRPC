@@ -210,17 +210,6 @@ run_async_client_debug:run_async_server
 	                        --port 50053"
 	        #/bin/sh -c "export GRPC_TRACE=all && export GRPC_VERBOSITY=DEBUG && ./greeter_async_client"
 
-
-gtest:build
-	docker run \
-	        --rm \
-	        -v $(shell pwd):/shared \
-	        -u $(shell id -u):$(shell id -g) \
-	        -w /shared/build_debian \
-	        debian_grpc \
-	        ./my_test --gtest_color=yes
-# --gtest_list_tests
-
 test_server:build
 	docker run \
 	        --rm \
