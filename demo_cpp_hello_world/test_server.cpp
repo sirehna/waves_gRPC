@@ -1,8 +1,5 @@
 #include "gtest/gtest.h"
-#include <grpcpp/grpcpp.h>
-#include "greeter_sync_server.hh"
-
-#include "helloworld.grpc.pb.h"
+#include "greeter_sync_client.hh"
 
 class ServerDemo : public ::testing::Test
 {
@@ -10,10 +7,11 @@ class ServerDemo : public ::testing::Test
 
 TEST_F(ServerDemo, say_hello_demo)
 {
-    grpc::ServerContext context;
-    helloworld::HelloRequest request;
-    helloworld::HelloReply reply;
-    GreeterServiceImpl greeter_service;
-    // grpc::Status status = greeter_service.SayHello(&context, &request, &reply);
-    ASSERT_EQ("NED", "NED");
+    std::string port("50051");
+    std::string ip("server");
+    GreeterClient greeter(grpc::CreateChannel(
+        ip + ":" + port, grpc::InsecureChannelCredentials()));
+    std::string user("world");
+    std::string reply = greeter.SayHello(user);
+    ASSERT_EQ(reply, "Hello world");
 }
