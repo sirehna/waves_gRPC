@@ -17,4 +17,3 @@ TEST_F(ServerDemo, say_hello_demo)
     // grpc::Status status = greeter_service.SayHello(&context, &request, &reply);
     ASSERT_EQ("NED", "NED");
 }
-
