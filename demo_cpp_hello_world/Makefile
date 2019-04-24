@@ -116,6 +116,7 @@ run_sync_server: network
 	    fi;
 
 run_sync_client: run_sync_server
+	sleep 1
 	docker run \
 	    --net=grpc_net \
 	    --name grpc_sync_client \
