@@ -16,6 +16,7 @@
  *
  */
 
+#include "greeter_sync_client.hh"
 #include <iostream>
 #include <memory>
 #include <string>
@@ -30,14 +31,10 @@ using helloworld::HelloRequest;
 using helloworld::HelloReply;
 using helloworld::Greeter;
 
-class GreeterClient {
- public:
-  GreeterClient(std::shared_ptr<Channel> channel)
-      : stub_(Greeter::NewStub(channel)) {}
-
-  // Assembles the client's payload, sends it and presents the response back
-  // from the server.
-  std::string SayHello(const std::string& user) {
+// Assembles the client's payload, sends it and presents the response back
+// from the server.
+std::string GreeterClient::SayHello(const std::string& user)
+{
     // Data we are sending to the server.
     HelloRequest request;
     request.set_name(user);
@@ -53,15 +50,14 @@ class GreeterClient {
     Status status = stub_->SayHello(&context, request, &reply);
 
     // Act upon its status.
-    if (status.ok()) {
-      return reply.message();
-    } else {
-      std::cout << status.error_code() << ": " << status.error_message()
-                << std::endl;
-      return "RPC failed";
+    if (status.ok())
+    {
+        return reply.message();
     }
-  }
-
- private:
-  std::unique_ptr<Greeter::Stub> stub_;
-};
+    else
+    {
+        std::cout << status.error_code() << ": " << status.error_message()
+                  << std::endl;
+        return "RPC failed";
+    }
+}
