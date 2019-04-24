@@ -100,7 +100,7 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
 
 # Targets greeter_[async_](client|server)
 foreach(_target
-    greeter_sync_client
+
     greeter_async_client
     greeter_async_server)
     add_executable(${_target} "${_target}.cc"
@@ -112,6 +112,15 @@ foreach(_target
         pthread)
 endforeach()
 
+add_executable(greeter_sync_client
+    greeter_sync_client.cc
+    greeter_sync_client_main.cc
+    ${hw_proto_srcs}
+    ${hw_grpc_srcs})
+target_link_libraries(greeter_sync_client
+    ${_GRPC_GRPCPP_UNSECURE}
+    ${_PROTOBUF_LIBPROTOBUF}
+    pthread)
 
 add_executable(greeter_sync_server
     greeter_sync_server.cc
@@ -122,7 +131,6 @@ target_link_libraries(greeter_sync_server
     ${_GRPC_GRPCPP_UNSECURE}
     ${_PROTOBUF_LIBPROTOBUF}
     pthread)
-
 
 add_executable(test_server
     test_server.cpp
