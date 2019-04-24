@@ -3,11 +3,8 @@
 #include <vector>
 #include <string>
 #include <cmath>
-
 #include <grpcpp/grpcpp.h>
-
-#include <args.hxx>
-
+#include "args.hxx"
 #include "wave.grpc.pb.h"
 
 #define PI (4.0 * std::atan(1.0))
