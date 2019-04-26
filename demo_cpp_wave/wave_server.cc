@@ -17,8 +17,10 @@ using grpc::ServerWriter;
 using grpc::Status;
 using wave::Point;
 using wave::ElevationRequest;
-using wave::ElevationPoint;
 using wave::ElevationResponse;
+using wave::ElevationPoint;
+using wave::ElevationRequestRepeated;
+using wave::ElevationResponseRepeated;
 using wave::ElevationService;
 using wave::FlatDiscreteDirectionalWaveSpectrum;
 using wave::WaveSpectrumLine;
@@ -54,6 +56,54 @@ class ElevationServiceImpl final : public ElevationService::Service {
                 added_elevation_point->set_x(point.x());
                 added_elevation_point->set_y(point.y());
                 added_elevation_point->set_z(point.x() + point.y());
+            }
+
+            return Status::OK;
+        }
+
+        Status GetElevationInputRepeated(ServerContext* context, const ElevationRequestRepeated* request,
+                            ElevationResponse* reply) override
+        {
+            reply->clear_elevation_points();
+            reply->set_t(request->t());
+            for (size_t index = 0; index < request->x_size(); ++index)
+            {
+                ElevationPoint* added_elevation_point = reply->add_elevation_points();
+                added_elevation_point->set_x(request->x(index));
+                added_elevation_point->set_y(request->y(index));
+                added_elevation_point->set_z(request->x(index) + request->y(index));
+            }
+
+            return Status::OK;
+        }
+
+        Status GetElevationOutputRepeated(ServerContext* context, const ElevationRequest* request,
+                            ElevationResponseRepeated* reply) override
+        {
+            reply->clear_z();
+            reply->clear_x(); reply->clear_y();
+            reply->set_t(request->t());
+            for (const Point& point : request->points())
+            {
+                reply->add_x(point.x());
+                reply->add_y(point.y());
+                reply->add_z(point.x() + point.y());
+            }
+
+            return Status::OK;
+        }
+
+        Status GetElevationRepeated(ServerContext* context, const ElevationRequestRepeated* request,
+                            ElevationResponseRepeated* reply) override
+        {
+            reply->clear_z();
+            reply->clear_x(); reply->clear_y();
+            reply->set_t(request->t());
+            for (size_t index = 0; index < request->x_size(); ++index)
+            {
+                reply->add_x(request->x(index));
+                reply->add_y(request->y(index));
+                reply->add_z(request->x(index) + request->y(index));
             }
 
             return Status::OK;

@@ -5,9 +5,12 @@
 using grpc::Channel;
 using wave::ElevationRequest;
 using wave::ElevationResponse;
+using wave::ElevationRequestRepeated;
+using wave::ElevationResponseRepeated;
 using wave::ElevationService;
 
 void add_points_to_request(ElevationRequest& request, const std::vector<double>& x, const std::vector<double>& y);
+void add_points_to_request_repeated(ElevationRequestRepeated& request, const std::vector<double>& x, const std::vector<double>& y);
 
 void display_elevations(const ElevationResponse& elevation_response);
 
@@ -17,6 +20,9 @@ class ElevationServiceClient
         ElevationServiceClient(const std::shared_ptr<Channel>& channel)
             : stub_(ElevationService::NewStub(channel)) {}
         ElevationResponse get_elevation(const ElevationRequest& resquest);
+        ElevationResponse get_elevation_input_repeated(const ElevationRequestRepeated& resquest);
+        ElevationResponseRepeated get_elevation_output_repeated(const ElevationRequest& resquest);
+        ElevationResponseRepeated get_elevation_repeated(const ElevationRequestRepeated& resquest);
         void get_elevations(const std::vector<double>& x, const std::vector<double>& y,
                             const double dt, const double t_start, const double t_end);
     private:

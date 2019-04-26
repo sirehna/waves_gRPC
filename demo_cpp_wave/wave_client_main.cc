@@ -8,6 +8,7 @@
 #include "wave_client.hh"
 
 using wave::ElevationRequest;
+using wave::ElevationRequestRepeated;
 
 int main(int argc, char const * const argv[])
 {
@@ -67,8 +68,8 @@ int main(int argc, char const * const argv[])
     auto start = std::chrono::system_clock::now();
     std::chrono::duration<double> diff = start-start;
 
-    ElevationRequest request;
-    add_points_to_request(request, x, y);
+    ElevationRequest request; // ElevationRequestRepeated request; //
+    add_points_to_request(request, x, y); // add_points_to_request_repeated(request, x, y); //
     request.set_t(t);
 
     std::cout << "Unary Elevation" << std::endl << std::endl;
@@ -76,10 +77,11 @@ int main(int argc, char const * const argv[])
     for (size_t ind = 0; ind < 1000; ++ind)
     {
         start = std::chrono::system_clock::now();
-        elevation_service.get_elevation(request);
+        elevation_service.get_elevation(request); // elevation_service.get_elevation_repeated(request); //
         diff = std::chrono::system_clock::now() - start;
     }
     std::cout << diff.count() * 1000 << " ms." << std::endl;
+
 /*
     // Server streaming elevation
     const double dt(0.1);

@@ -13,8 +13,10 @@ using grpc::ClientReader;
 using grpc::Status;
 using wave::Point;
 using wave::ElevationRequest;
-using wave::ElevationPoint;
 using wave::ElevationResponse;
+using wave::ElevationPoint;
+using wave::ElevationRequestRepeated;
+using wave::ElevationResponseRepeated;
 using wave::ElevationService;
 
 void add_points_to_request(ElevationRequest& request, const std::vector<double>& x, const std::vector<double>& y)
@@ -25,6 +27,16 @@ void add_points_to_request(ElevationRequest& request, const std::vector<double>&
         Point* added_point = request.add_points();
         added_point->set_x(x[index]);
         added_point->set_y(y[index]);
+    }
+}
+
+void add_points_to_request_repeated(ElevationRequestRepeated& request, const std::vector<double>& x, const std::vector<double>& y)
+{
+    const size_t max_size = std::min(x.size(), y.size());
+    for (size_t index = 0; index < max_size; ++index)
+    {
+        request.add_x(x[index]);
+        request.add_y(y[index]);
     }
 }
 
@@ -49,6 +61,57 @@ ElevationResponse ElevationServiceClient::get_elevation(const ElevationRequest& 
     ClientContext context;
 
     Status status = stub_->GetElevation(&context, request, &reply);
+    if (status.ok())
+    {
+        return reply;
+    }
+    else
+    {
+        std::cout << status.error_code() << ": " << status.error_message() << std::endl;
+        std::cout << "ElevationService failed." << std::endl;
+    }
+}
+
+ElevationResponse ElevationServiceClient::get_elevation_input_repeated(const ElevationRequestRepeated& request)
+{
+    ElevationResponse reply;
+    ClientContext context;
+
+    Status status = stub_->GetElevationInputRepeated(&context, request, &reply);
+    if (status.ok())
+    {
+        return reply;
+    }
+    else
+    {
+        std::cout << status.error_code() << ": " << status.error_message() << std::endl;
+        std::cout << "ElevationService failed." << std::endl;
+    }
+}
+
+ElevationResponseRepeated ElevationServiceClient::get_elevation_output_repeated(const ElevationRequest& request)
+{
+    ElevationResponseRepeated reply;
+    ClientContext context;
+
+    Status status = stub_->GetElevationOutputRepeated(&context, request, &reply);
+    if (status.ok())
+    {
+        return reply;
+    }
+    else
+    {
+        std::cout << status.error_code() << ": " << status.error_message() << std::endl;
+        std::cout << "ElevationService failed." << std::endl;
+    }
+}
+
+ElevationResponseRepeated ElevationServiceClient::get_elevation_repeated(const ElevationRequestRepeated& request)
+{
+    ElevationResponseRepeated reply;
+    ClientContext context;
+
+    Status status = stub_->GetElevationRepeated(&context, request, &reply);
     if (status.ok())
     {
         return reply;
