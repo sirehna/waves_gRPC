@@ -16,7 +16,7 @@ class ElevationServiceClient
     public:
         ElevationServiceClient(const std::shared_ptr<Channel>& channel)
             : stub_(ElevationService::NewStub(channel)) {}
-        ElevationResponse get_elevation(const std::vector<double>& x, const std::vector<double>& y, const double t);
+        ElevationResponse get_elevation(const ElevationRequest& resquest);
         void get_elevations(const std::vector<double>& x, const std::vector<double>& y,
                             const double dt, const double t_start, const double t_end);
     private:

@@ -1,6 +1,7 @@
 #include "gtest/gtest.h"
 #include <chrono>
 #include "wave_client.hh"
+using wave::ElevationRequest;
 
 class ServerDemo : public ::testing::Test
 {
@@ -25,10 +26,14 @@ TEST_F(ServerDemo, get_elevation_demo)
 
     std::vector<std::chrono::duration<double>> times{};
 
+    ElevationRequest request;
+    add_points_to_request(request, x, y);
+    request.set_t(t);
+
     for (size_t index = 0; index < 10; ++index)
     {
         auto start = std::chrono::system_clock::now();
-        ElevationResponse reply = elevation_service.get_elevation(x, y, t);
+        ElevationResponse reply = elevation_service.get_elevation(request);
         const std::chrono::duration<double> diff = std::chrono::system_clock::now() - start;
         times.push_back(diff);
         std::cout << "Request duration: " << diff.count() << " s." << std::endl;

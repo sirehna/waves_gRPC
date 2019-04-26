@@ -53,7 +53,7 @@ class ElevationServiceImpl final : public ElevationService::Service {
                 ElevationPoint* added_elevation_point = reply->add_elevation_points();
                 added_elevation_point->set_x(point.x());
                 added_elevation_point->set_y(point.y());
-                added_elevation_point->set_z(compute_elevation(point.x(), point.y(), request->t(), wave_spectrum_));
+                added_elevation_point->set_z(point.x() + point.y());
             }
 
             return Status::OK;

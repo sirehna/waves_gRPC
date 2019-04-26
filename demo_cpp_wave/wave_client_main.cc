@@ -7,6 +7,8 @@
 #include "args.hxx"
 #include "wave_client.hh"
 
+using wave::ElevationRequest;
+
 int main(int argc, char const * const argv[])
 {
     // Inputs
@@ -59,23 +61,30 @@ int main(int argc, char const * const argv[])
     std::cout << std::endl;
 
     // Data
-    const std::vector<double> x{1.3, 2, 0};
-    const std::vector<double> y{2.7, 0.5, 0};
+    const std::vector<double> x(1000, 1.3);
+    const std::vector<double> y(1000, 2.7);
     const double t(0.1);
+    auto start = std::chrono::system_clock::now();
+    std::chrono::duration<double> diff = start-start;
+
+    ElevationRequest request;
+    add_points_to_request(request, x, y);
+    request.set_t(t);
+
+    std::cout << "Unary Elevation" << std::endl << std::endl;
+    // Unary elevation
+    for (size_t ind = 0; ind < 1000; ++ind)
+    {
+        start = std::chrono::system_clock::now();
+        elevation_service.get_elevation(request);
+        diff = std::chrono::system_clock::now() - start;
+    }
+    std::cout << diff.count() * 1000 << " ms." << std::endl;
+/*
+    // Server streaming elevation
     const double dt(0.1);
     const double t_start(0.0);
     const double t_end(0.25);
-
-    // Unary elevation
-    auto start = std::chrono::system_clock::now();
-    std::cout << "Unary Elevation" << std::endl << std::endl;
-    display_elevations(elevation_service.get_elevation(x, y, t));
-    auto end = std::chrono::system_clock::now();
-    std::chrono::duration<double> diff = end-start;
-    std::cout << diff.count() << " s\n";
-    std::cout << std::endl;
-
-    // Server streaming elevation
     start = std::chrono::system_clock::now();
     std::cout << "Server Streaming Elevation" << std::endl << std::endl;
     elevation_service.get_elevations(x, y, dt, t_start, t_end);
@@ -83,6 +92,6 @@ int main(int argc, char const * const argv[])
     diff = end-start;
     std::cout << diff.count() << " s\n";
     std::cout << std::endl;
-
+*/
     return 0;
 }

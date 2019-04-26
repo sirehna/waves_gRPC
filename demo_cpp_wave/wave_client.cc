@@ -43,12 +43,8 @@ void display_elevations(const ElevationResponse& elevation_response)
     }
 }
 
-ElevationResponse ElevationServiceClient::get_elevation(const std::vector<double>& x, const std::vector<double>& y, const double t)
+ElevationResponse ElevationServiceClient::get_elevation(const ElevationRequest& request)
 {
-    ElevationRequest request;
-    add_points_to_request(request, x, y);
-    request.set_t(t);
-
     ElevationResponse reply;
     ClientContext context;
 

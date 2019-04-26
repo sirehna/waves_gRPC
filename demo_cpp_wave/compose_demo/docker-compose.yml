@@ -4,9 +4,9 @@ services:
     image: "docker_wave_server:latest"
     ports:
      - "50051:50051"
-    command: ["/usr/wave_server", "--spectrum", "y"]
+    command: ["/usr/wave_server", "--spectrum", "n"]
   client:
     image: "docker_wave_client:latest"
     depends_on:
       - "server"
-    command: ["/usr/wait-for-it.sh", "server:50051", "--", "/usr/wave_client" , "--ip", "server", "--port", "50051"]
+    command: ["/usr/wait-for-it.sh", "server:50051", "--", "time", "/usr/wave_client" , "--ip", "server", "--port", "50051"]

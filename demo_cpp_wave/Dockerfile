@@ -1,5 +1,5 @@
-from debian:9
-run echo "deb http://deb.debian.org/debian stretch-backports main" >>  /etc/apt/sources.list && \
+FROM debian:9
+RUN echo "deb http://deb.debian.org/debian stretch-backports main" >>  /etc/apt/sources.list && \
     apt-get update && \
     apt-get install --yes --no-install-recommends \
         make \
