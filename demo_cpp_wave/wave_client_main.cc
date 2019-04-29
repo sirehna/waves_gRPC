@@ -30,34 +30,7 @@ double test_unary_elevation(size_t vector_size, size_t loop_size, ElevationServi
         elevation_service.get_elevation(request);
         diff += std::chrono::system_clock::now() - start;
     }
-    double time = diff.count() * 1000 / loop_size;
-    std::cout << "Not repeated: " << time << " ms." << std::endl;
-    return time;
-}
-
-double test_output_repeated_unary_elevation(size_t vector_size, size_t loop_size, ElevationServiceClient& elevation_service)
-{
-    // Data
-    const std::vector<double> x(vector_size, 1.3);
-    const std::vector<double> y(vector_size, 2.7);
-    const double t(0.1);
-    auto start = std::chrono::system_clock::now();
-    std::chrono::duration<double> diff = start-start;
-
-    ElevationRequest request;
-    add_points_to_request(request, x, y);
-    request.set_t(t);
-
-    // Compute average time response for requesting elevation
-    for (size_t ind = 0; ind < loop_size; ++ind)
-    {
-        start = std::chrono::system_clock::now();
-        elevation_service.get_elevation_output_repeated(request);
-        diff += std::chrono::system_clock::now() - start;
-    }
-    double time = diff.count() * 1000 / loop_size;
-    std::cout << "Output Repeated: " << time << " ms." << std::endl;
-    return time;
+    return diff.count() * 1000 / loop_size;
 }
 
 double test_input_repeated_unary_elevation(size_t vector_size, size_t loop_size, ElevationServiceClient& elevation_service)
@@ -80,12 +53,33 @@ double test_input_repeated_unary_elevation(size_t vector_size, size_t loop_size,
         elevation_service.get_elevation_input_repeated(request);
         diff += std::chrono::system_clock::now() - start;
     }
-    double time = diff.count() * 1000 / loop_size;
-    std::cout << "Intput Repeated: " << time << " ms." << std::endl;
-    return time;
+    return diff.count() * 1000 / loop_size;
 }
 
-double test_repeated_unary_elevation(size_t vector_size, size_t loop_size, ElevationServiceClient& elevation_service)
+double test_output_repeated_unary_elevation(size_t vector_size, size_t loop_size, ElevationServiceClient& elevation_service, bool does_return_xy)
+{
+    // Data
+    const std::vector<double> x(vector_size, 1.3);
+    const std::vector<double> y(vector_size, 2.7);
+    const double t(0.1);
+    auto start = std::chrono::system_clock::now();
+    std::chrono::duration<double> diff = start-start;
+
+    ElevationRequest request;
+    add_points_to_request(request, x, y);
+    request.set_t(t);
+
+    // Compute average time response for requesting elevation
+    for (size_t ind = 0; ind < loop_size; ++ind)
+    {
+        start = std::chrono::system_clock::now();
+        elevation_service.get_elevation_output_repeated(request, does_return_xy);
+        diff += std::chrono::system_clock::now() - start;
+    }
+    return diff.count() * 1000 / loop_size;
+}
+
+double test_repeated_unary_elevation(size_t vector_size, size_t loop_size, ElevationServiceClient& elevation_service, bool does_return_xy)
 {
     // Data
     const std::vector<double> x(vector_size, 1.3);
@@ -102,12 +96,12 @@ double test_repeated_unary_elevation(size_t vector_size, size_t loop_size, Eleva
     for (size_t ind = 0; ind < loop_size; ++ind)
     {
         start = std::chrono::system_clock::now();
-        elevation_service.get_elevation_repeated(request);
+        elevation_service.get_elevation_repeated(request, does_return_xy);
         diff += std::chrono::system_clock::now() - start;
     }
-    double time = diff.count() * 1000 / loop_size;
-    std::cout << "Repeated: " << time << " ms." << std::endl;
-    return time;
+    return diff.count() * 1000 / loop_size;
+}
+
 }
 
 int main(int argc, char const * const argv[])
@@ -166,8 +160,10 @@ int main(int argc, char const * const argv[])
 
     test_unary_elevation(vector_size, loop_size, elevation_service);
     test_input_repeated_unary_elevation(vector_size, loop_size, elevation_service);
-    test_output_repeated_unary_elevation(vector_size, loop_size, elevation_service);
-    test_repeated_unary_elevation(vector_size, loop_size, elevation_service);
+    test_output_repeated_unary_elevation(vector_size, loop_size, elevation_service, false);
+    test_output_repeated_unary_elevation(vector_size, loop_size, elevation_service, true);
+    test_repeated_unary_elevation(vector_size, loop_size, elevation_service, false);
+    test_repeated_unary_elevation(vector_size, loop_size, elevation_service, true);
     std::cout << std::endl;
 
 /*

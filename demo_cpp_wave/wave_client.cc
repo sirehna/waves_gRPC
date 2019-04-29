@@ -89,12 +89,16 @@ ElevationResponse ElevationServiceClient::get_elevation_input_repeated(const Ele
     }
 }
 
-ElevationResponseRepeated ElevationServiceClient::get_elevation_output_repeated(const ElevationRequest& request)
+ElevationResponseRepeated ElevationServiceClient::get_elevation_output_repeated(const ElevationRequest& request, bool does_return_xy)
 {
     ElevationResponseRepeated reply;
     ClientContext context;
 
-    Status status = stub_->GetElevationOutputRepeated(&context, request, &reply);
+    Status status = (does_return_xy) ?
+                    stub_->GetElevationOutputRepeated(&context, request, &reply)
+                    :
+                    stub_->GetElevationOutputRepeatedZ(&context, request, &reply);
+
     if (status.ok())
     {
         return reply;
@@ -106,12 +110,15 @@ ElevationResponseRepeated ElevationServiceClient::get_elevation_output_repeated(
     }
 }
 
-ElevationResponseRepeated ElevationServiceClient::get_elevation_repeated(const ElevationRequestRepeated& request)
+ElevationResponseRepeated ElevationServiceClient::get_elevation_repeated(const ElevationRequestRepeated& request, bool does_return_xy)
 {
     ElevationResponseRepeated reply;
     ClientContext context;
 
-    Status status = stub_->GetElevationRepeated(&context, request, &reply);
+    Status status = (does_return_xy) ?
+                    stub_->GetElevationRepeated(&context, request, &reply)
+                    :
+                    stub_->GetElevationRepeatedZ(&context, request, &reply);
     if (status.ok())
     {
         return reply;

@@ -109,6 +109,32 @@ class ElevationServiceImpl final : public ElevationService::Service {
             return Status::OK;
         }
 
+        Status GetElevationOutputRepeatedZ(ServerContext* context, const ElevationRequest* request,
+                            ElevationResponseRepeated* reply) override
+        {
+            reply->clear_z();
+            reply->set_t(request->t());
+            for (const Point& point : request->points())
+            {
+                reply->add_z(point.x() + point.y());
+            }
+
+            return Status::OK;
+        }
+
+        Status GetElevationRepeatedZ(ServerContext* context, const ElevationRequestRepeated* request,
+                            ElevationResponseRepeated* reply) override
+        {
+            reply->clear_z();
+            reply->set_t(request->t());
+            for (size_t index = 0; index < request->x_size(); ++index)
+            {
+                reply->add_z(request->x(index) + request->y(index));
+            }
+
+            return Status::OK;
+        }
+
         Status GetElevations(ServerContext* context, const ElevationRequest* request,
                             ServerWriter<ElevationResponse>* writer) override
         {

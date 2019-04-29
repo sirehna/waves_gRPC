@@ -21,8 +21,8 @@ class ElevationServiceClient
             : stub_(ElevationService::NewStub(channel)) {}
         ElevationResponse get_elevation(const ElevationRequest& resquest);
         ElevationResponse get_elevation_input_repeated(const ElevationRequestRepeated& resquest);
-        ElevationResponseRepeated get_elevation_output_repeated(const ElevationRequest& resquest);
-        ElevationResponseRepeated get_elevation_repeated(const ElevationRequestRepeated& resquest);
+        ElevationResponseRepeated get_elevation_output_repeated(const ElevationRequest& resquest, bool does_return_xy);
+        ElevationResponseRepeated get_elevation_repeated(const ElevationRequestRepeated& resquest, bool does_return_xy);
         void get_elevations(const std::vector<double>& x, const std::vector<double>& y,
                             const double dt, const double t_start, const double t_end);
     private:

@@ -14,6 +14,8 @@ service ElevationService
     rpc GetElevationInputRepeated (ElevationRequestRepeated) returns (ElevationResponse) {}
     rpc GetElevationOutputRepeated (ElevationRequest) returns (ElevationResponseRepeated) {}
     rpc GetElevationRepeated (ElevationRequestRepeated) returns (ElevationResponseRepeated) {}
+    rpc GetElevationOutputRepeatedZ (ElevationRequest) returns (ElevationResponseRepeated) {}
+    rpc GetElevationRepeatedZ (ElevationRequestRepeated) returns (ElevationResponseRepeated) {}
     rpc GetElevations (ElevationRequest) returns (stream ElevationResponse) {}
 }
 
@@ -73,6 +75,7 @@ message ElevationRequestRepeated
     repeated double y = 3;
     double t = 2;
 }
+
 // The response message containing the elevation
 message ElevationResponseRepeated
 {
