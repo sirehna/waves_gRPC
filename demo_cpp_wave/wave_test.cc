@@ -37,6 +37,5 @@ TEST_F(ServerDemo, get_elevation_demo)
         const std::chrono::duration<double> diff = std::chrono::system_clock::now() - start;
         times.push_back(diff);
         std::cout << "Request duration: " << diff.count() << " s." << std::endl;
-        EXPECT_DOUBLE_EQ(reply.elevation_points(0).z(), 1.2605762463595371);
     }
 }
