@@ -102,7 +102,28 @@ double test_repeated_unary_elevation(size_t vector_size, size_t loop_size, Eleva
     return diff.count() * 1000 / loop_size;
 }
 
+
+void writeMardownResults(size_t vector_size, size_t loop_size, ElevationServiceClient& elevation_service)
+{
+    std::cout << "## " << loop_size << " requests. Vector of size " << vector_size << "." << std::endl << std::endl
+              << "Input                    | Output          | Average time per request (ms)" << std::endl
+              << "-------------------------|--------------------------------------|---------" << std::endl;
+
+    std::cout << "(repeated x, repeated y) | repeated z                           | "
+              << test_repeated_unary_elevation(vector_size, loop_size, elevation_service, false) << std::endl;
+    std::cout << "(repeated x, repeated y) | (repeated x, repeated y, repeated z) | "
+              << test_repeated_unary_elevation(vector_size, loop_size, elevation_service, true) << std::endl;
+    std::cout << "(repeated x, repeated y) | repeated (x, y, z)                   | "
+              << test_input_repeated_unary_elevation(vector_size, loop_size, elevation_service) << std::endl;
+    std::cout << "repeated (x, y)          | repeated z                           | "
+              << test_output_repeated_unary_elevation(vector_size, loop_size, elevation_service, false) << std::endl;
+    std::cout << "repeated (x, y)          | (repeated x, repeated y, repeated z) | "
+              << test_output_repeated_unary_elevation(vector_size, loop_size, elevation_service, true) << std::endl;
+    std::cout << "repeated (x, y)          | repeated (x, y, z)                   | "
+              << test_unary_elevation(vector_size, loop_size, elevation_service) << std::endl;
+    std::cout << std::endl;
 }
+
 
 int main(int argc, char const * const argv[])
 {
@@ -155,16 +176,13 @@ int main(int argc, char const * const argv[])
         ip + ":" + port, grpc::InsecureChannelCredentials()));
     std::cout << std::endl;
 
-    const size_t loop_size = 1000;
-    const size_t vector_size = 1000;
+    size_t loop_size = 10000;
+    size_t vector_size = 1;
+    writeMardownResults(vector_size, loop_size, elevation_service);
 
-    test_unary_elevation(vector_size, loop_size, elevation_service);
-    test_input_repeated_unary_elevation(vector_size, loop_size, elevation_service);
-    test_output_repeated_unary_elevation(vector_size, loop_size, elevation_service, false);
-    test_output_repeated_unary_elevation(vector_size, loop_size, elevation_service, true);
-    test_repeated_unary_elevation(vector_size, loop_size, elevation_service, false);
-    test_repeated_unary_elevation(vector_size, loop_size, elevation_service, true);
-    std::cout << std::endl;
+    loop_size = 1000;
+    vector_size = 1000;
+    writeMardownResults(vector_size, loop_size, elevation_service);
 
 /*
     // Server streaming elevation

@@ -60,7 +60,7 @@ dc_test:docker_images
 	cd compose_demo && docker-compose up --force-recreate -d
 	# cd compose_demo && sleep 0.5 && \
 	#     while [ -z "`docker-compose ps | grep client | grep Exit`" ]; do echo "Client terminated"; done
-	cd compose_demo && sleep 3 &&\
+	cd compose_demo && sleep 10 &&\
 	    result=`docker-compose ps | grep client | grep "Exit 0"` || true && \
 	    echo "$${result}" && \
 	    if [ -n "$${result}" ]; \
