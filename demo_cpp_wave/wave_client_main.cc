@@ -10,6 +10,106 @@
 using wave::ElevationRequest;
 using wave::ElevationRequestRepeated;
 
+double test_unary_elevation(size_t vector_size, size_t loop_size, ElevationServiceClient& elevation_service)
+{
+    // Data
+    const std::vector<double> x(vector_size, 1.3);
+    const std::vector<double> y(vector_size, 2.7);
+    const double t(0.1);
+    auto start = std::chrono::system_clock::now();
+    std::chrono::duration<double> diff = start-start;
+
+    ElevationRequest request;
+    add_points_to_request(request, x, y);
+    request.set_t(t);
+
+    // Compute average time response for requesting elevation
+    for (size_t ind = 0; ind < loop_size; ++ind)
+    {
+        start = std::chrono::system_clock::now();
+        elevation_service.get_elevation(request);
+        diff += std::chrono::system_clock::now() - start;
+    }
+    double time = diff.count() * 1000 / loop_size;
+    std::cout << "Not repeated: " << time << " ms." << std::endl;
+    return time;
+}
+
+double test_output_repeated_unary_elevation(size_t vector_size, size_t loop_size, ElevationServiceClient& elevation_service)
+{
+    // Data
+    const std::vector<double> x(vector_size, 1.3);
+    const std::vector<double> y(vector_size, 2.7);
+    const double t(0.1);
+    auto start = std::chrono::system_clock::now();
+    std::chrono::duration<double> diff = start-start;
+
+    ElevationRequest request;
+    add_points_to_request(request, x, y);
+    request.set_t(t);
+
+    // Compute average time response for requesting elevation
+    for (size_t ind = 0; ind < loop_size; ++ind)
+    {
+        start = std::chrono::system_clock::now();
+        elevation_service.get_elevation_output_repeated(request);
+        diff += std::chrono::system_clock::now() - start;
+    }
+    double time = diff.count() * 1000 / loop_size;
+    std::cout << "Output Repeated: " << time << " ms." << std::endl;
+    return time;
+}
+
+double test_input_repeated_unary_elevation(size_t vector_size, size_t loop_size, ElevationServiceClient& elevation_service)
+{
+    // Data
+    const std::vector<double> x(vector_size, 1.3);
+    const std::vector<double> y(vector_size, 2.7);
+    const double t(0.1);
+    auto start = std::chrono::system_clock::now();
+    std::chrono::duration<double> diff = start-start;
+
+    ElevationRequestRepeated request;
+    add_points_to_request_repeated(request, x, y);
+    request.set_t(t);
+
+    // Compute average time response for requesting elevation
+    for (size_t ind = 0; ind < loop_size; ++ind)
+    {
+        start = std::chrono::system_clock::now();
+        elevation_service.get_elevation_input_repeated(request);
+        diff += std::chrono::system_clock::now() - start;
+    }
+    double time = diff.count() * 1000 / loop_size;
+    std::cout << "Intput Repeated: " << time << " ms." << std::endl;
+    return time;
+}
+
+double test_repeated_unary_elevation(size_t vector_size, size_t loop_size, ElevationServiceClient& elevation_service)
+{
+    // Data
+    const std::vector<double> x(vector_size, 1.3);
+    const std::vector<double> y(vector_size, 2.7);
+    const double t(0.1);
+    auto start = std::chrono::system_clock::now();
+    std::chrono::duration<double> diff = start-start;
+
+    ElevationRequestRepeated request;
+    add_points_to_request_repeated(request, x, y);
+    request.set_t(t);
+
+    // Compute average time response for requesting elevation
+    for (size_t ind = 0; ind < loop_size; ++ind)
+    {
+        start = std::chrono::system_clock::now();
+        elevation_service.get_elevation_repeated(request);
+        diff += std::chrono::system_clock::now() - start;
+    }
+    double time = diff.count() * 1000 / loop_size;
+    std::cout << "Repeated: " << time << " ms." << std::endl;
+    return time;
+}
+
 int main(int argc, char const * const argv[])
 {
     // Inputs
@@ -61,39 +161,22 @@ int main(int argc, char const * const argv[])
         ip + ":" + port, grpc::InsecureChannelCredentials()));
     std::cout << std::endl;
 
-    // Data
-    const std::vector<double> x(1000, 1.3);
-    const std::vector<double> y(1000, 2.7);
-    const double t(0.1);
-    auto start = std::chrono::system_clock::now();
-    std::chrono::duration<double> diff = start-start;
+    const size_t loop_size = 1000;
+    const size_t vector_size = 1000;
 
-    ElevationRequest request; // ElevationRequestRepeated request; //
-    add_points_to_request(request, x, y); // add_points_to_request_repeated(request, x, y); //
-    request.set_t(t);
-
-    std::cout << "Unary Elevation" << std::endl << std::endl;
-    // Unary elevation
-    for (size_t ind = 0; ind < 1000; ++ind)
-    {
-        start = std::chrono::system_clock::now();
-        elevation_service.get_elevation(request); // elevation_service.get_elevation_repeated(request); //
-        diff = std::chrono::system_clock::now() - start;
-    }
-    std::cout << diff.count() * 1000 << " ms." << std::endl;
+    test_unary_elevation(vector_size, loop_size, elevation_service);
+    test_input_repeated_unary_elevation(vector_size, loop_size, elevation_service);
+    test_output_repeated_unary_elevation(vector_size, loop_size, elevation_service);
+    test_repeated_unary_elevation(vector_size, loop_size, elevation_service);
+    std::cout << std::endl;
 
 /*
     // Server streaming elevation
     const double dt(0.1);
     const double t_start(0.0);
     const double t_end(0.25);
-    start = std::chrono::system_clock::now();
     std::cout << "Server Streaming Elevation" << std::endl << std::endl;
     elevation_service.get_elevations(x, y, dt, t_start, t_end);
-    end = std::chrono::system_clock::now();
-    diff = end-start;
-    std::cout << diff.count() << " s\n";
-    std::cout << std::endl;
 */
     return 0;
 }
