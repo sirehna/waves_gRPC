@@ -103,7 +103,7 @@ double test_repeated_unary_elevation(size_t vector_size, size_t loop_size, Eleva
 }
 
 
-void writeMardownResults(size_t vector_size, size_t loop_size, ElevationServiceClient& elevation_service)
+void write_mardown_results(size_t vector_size, size_t loop_size, ElevationServiceClient& elevation_service)
 {
     std::cout << "## " << loop_size << " requests. Vector of size " << vector_size << "." << std::endl << std::endl
               << "Input                    | Output          | Average time per request (ms)" << std::endl
@@ -124,6 +124,29 @@ void writeMardownResults(size_t vector_size, size_t loop_size, ElevationServiceC
     std::cout << std::endl;
 }
 
+std::string add_spaces(size_t size)
+{
+    return (size < 10 ? "     " :
+           (size < 100 ? "    " :
+           (size < 1000 ? "   " :
+           (size < 10000 ? "  " :
+           (size < 100000 ? " " :
+            "" )))));
+}
+
+void write_mardown_repeated_results(std::vector<size_t> vector_sizes, size_t loop_size, ElevationServiceClient& elevation_service)
+{
+    std::cout << "## " << loop_size << " requests. (repeated x, repeated y) + (repeated x, repeated y, repeated z)" << std::endl << std::endl
+              << "Vector size  | Average time per request (ms)" << std::endl
+              << "-------------|------------------------------" << std::endl;
+
+    for (size_t vector_size : vector_sizes)
+    {
+        std::cout << vector_size << add_spaces(vector_size) << "       | "
+                << test_repeated_unary_elevation(vector_size, loop_size, elevation_service, true) << std::endl;
+    }
+    std::cout << std::endl;
+}
 
 int main(int argc, char const * const argv[])
 {
@@ -159,6 +182,8 @@ int main(int argc, char const * const argv[])
         return -1;
     }
 
+    std::cout << "Client" << std::endl;
+
     std::string port("50051");
     std::string ip("localhost");
     if (input_port)
@@ -171,19 +196,21 @@ int main(int argc, char const * const argv[])
       ip = args::get(input_ip);
     }
 
-    std::cout << "Client" << std::endl;
     ElevationServiceClient elevation_service(grpc::CreateChannel(
         ip + ":" + port, grpc::InsecureChannelCredentials()));
     std::cout << std::endl;
 
-    size_t loop_size = 10000;
     size_t vector_size = 1;
-    writeMardownResults(vector_size, loop_size, elevation_service);
+    size_t loop_size = 10000;
+    write_mardown_results(vector_size, loop_size, elevation_service);
 
-    loop_size = 1000;
     vector_size = 1000;
-    writeMardownResults(vector_size, loop_size, elevation_service);
+    loop_size = 1000;
+    write_mardown_results(vector_size, loop_size, elevation_service);
 
+    std::vector<size_t> vector_sizes{1, 100, 1000, 2000, 5000, 10000, 50000, 100000};
+    loop_size = 1000;
+    write_mardown_repeated_results(vector_sizes, loop_size, elevation_service);
 /*
     // Server streaming elevation
     const double dt(0.1);

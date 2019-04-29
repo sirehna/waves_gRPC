@@ -1,5 +1,4 @@
-_Results obtained by running `make dc_test`, changing, in `wave_client_main.cc`, which `request` type and `elevation_service` service are used._
-
+_Results obtained by running `make dc_test`._
 
 ## Vector of size 1; 10000 requests
 
