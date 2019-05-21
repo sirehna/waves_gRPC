@@ -1,0 +1,26 @@
+version: '3'
+services:
+  server:
+    image: "docker_wave_server:latest"
+    ports:
+     - "50051:50051"
+    command: ["/usr/wave_server", "--spectrum", "y"]
+  client_ghz:
+    image: "docker_client_ghz:latest"
+    depends_on:
+      - "server"
+    command: ["/usr/wait-for-it.sh", "server:50051", "--",
+              "/usr/bin/ghz", "--insecure",
+              "--proto", "/shared/wave.proto",
+              "--call", "wave.ElevationService.GetElevation",
+              "--data", '{ "points": [
+                  { "x": "1.3", "y": "2.7" },
+                  { "x": "1.3", "y": "2.7" },
+                  { "x": "1.3", "y": "2.7" },
+                  { "x": "1.3", "y": "2.7" },
+                  { "x": "1.3", "y": "2.7" },
+                  { "x": "1.3", "y": "2.7" }
+                ], "t": "0.1" }',
+              "server:50051"]
+    volumes:
+      - "./:/shared"

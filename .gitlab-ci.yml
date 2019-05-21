@@ -24,6 +24,7 @@ build:
    stage: build
    script:
      - cd demo_cpp_hello_world && make build && cd ..
+     - cd demo_cpp_wave && make build && cd ..
 
 test:
    stage: test
@@ -31,3 +32,5 @@ test:
      - cd demo_cpp_hello_world && make test && make stop && cd ..
      - cd demo_cpp_hello_world && make dc_gtest && make dc_stop && cd ..
      - cd demo_cpp_hello_world && make dc_test && make dc_stop && cd ..
+     - cd demo_cpp_wave && make dc_test && make dc_stop && cd ..
+     - cd demo_cpp_wave && make dc_gtest && make dc_stop && cd ..

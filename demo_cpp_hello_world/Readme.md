@@ -1,12 +1,12 @@
 # Helloworld CPP Demo with GRPC and Docker
 
 ## How to run it
+With docker : `$ make test`
+with docker-compose :
 ```
-$ cd demo_cpp_hello_world
-$ make test
-$ cd ..
+$ make dc_test
+$ make dc_stop
 ```
-
 The client sends a request to the server with parameter "world", the server prefixes it with "Hello ", and sends it back.
 
 ## .proto file
@@ -29,15 +29,3 @@ Asynchronous example adapted from https://github.com/grpc/grpc/tree/master/examp
 What's new : the use of `CompletionQueue` API to manage asynchronicity.
 
 `greeter_async_client_loop` loops to repeat the message sent only once by `greeter_async_client`.
-
-## Google tests
-
-```
-$ cd demo_cpp_hello_world
-$ make gtest
-$ cd ..
-```
-
-- Files concerned: `tests.cpp` (`$ make gtest`) and `test_server.cpp` (`$ make test_server`)
-
-`greeter_sync_server` has been divided into `greeter_sync_server` and `greeter_sync_server_main` to use gtest main during tests.
