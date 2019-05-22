@@ -1,7 +1,7 @@
 version: '3'
 services:
   server:
-    build: docker_wave_server
+    build: wave_server
     entrypoint: ["/usr/wave_server", "--spectrum", "y"]
   client_ghz:
     build: ghz
