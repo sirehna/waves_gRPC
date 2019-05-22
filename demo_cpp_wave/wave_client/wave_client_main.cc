@@ -182,17 +182,15 @@ int main(int argc, char const * const argv[])
         return -1;
     }
 
-    std::cout << "Client" << std::endl;
+    std::cout << "# gRPC performance tests" << std::endl;
 
     std::string port("50051");
     std::string ip("localhost");
     if (input_port)
     {
-      std::cout << "input_port: " << args::get(input_port) << std::endl;
       port = std::to_string(args::get(input_port));
     }
     if (input_ip) {
-      std::cout << "input_ip: " << args::get(input_ip) << std::endl;
       ip = args::get(input_ip);
     }
 
