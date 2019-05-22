@@ -40,10 +40,6 @@ build: cmake
 	    debian-grpc \
 	    ninja
 
-docker_server:build
-	cp build_debian/wave_server docker_wave_server/.
-	cd docker_wave_server && docker build . -t docker_wave_server && rm wave_server && cd ..
-
 docker_client:build
 	cp build_debian/wave_client docker_wave_client/.
 	cd docker_wave_client && docker build . -t docker_wave_client && rm wave_client && cd ..
@@ -55,7 +51,7 @@ docker_test:build
 docker_ghz:
 	cd docker_wave_ghz && docker build . -t docker_wave_ghz && cd ..
 
-docker_images:docker_server docker_client
+docker_images:docker_client
 	echo "Deploying server and client"
 
 dc_test:docker_images
@@ -70,16 +66,8 @@ dc_test:docker_images
 	       else echo "Failure" && docker-compose logs -t; \
 	       fi
 
-dc_gtest:docker_server docker_test
-	cd compose_test && docker-compose up --force-recreate -d
-	cd compose_test && docker-compose logs -t
-	cd compose_test && \
-	    result=`docker-compose ps | grep test | grep "Exit 0"` || true && \
-	    echo "$${result}" && \
-	    if [ -n "$${result}" ]; \
-	       then echo "Success"; \
-	       else echo "Failure" && docker-compose logs test; \
-	       fi
+dc_gtest: docker_test
+	@docker-compose -f compose_test.yml up -t 0 --exit-code-from test --abort-on-container-exit --build
 
 dc_perf:docker_server docker_ghz
 	cp wave.proto compose_ghz/.
