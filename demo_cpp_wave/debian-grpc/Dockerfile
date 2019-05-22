@@ -20,3 +20,4 @@ RUN echo "deb http://deb.debian.org/debian stretch-backports main" >>  /etc/apt/
         libprotobuf-dev \
         libprotoc-dev \
         protobuf-compiler-grpc
+ADD wave.proto /
