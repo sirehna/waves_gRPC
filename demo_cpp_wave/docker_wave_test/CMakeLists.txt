@@ -79,7 +79,7 @@ else()
 endif()
 
 # Proto file
-get_filename_component(hw_proto "wave.proto" ABSOLUTE)
+get_filename_component(hw_proto "/wave.proto" ABSOLUTE)
 get_filename_component(hw_proto_path "${hw_proto}" PATH)
 
 # Generated sources
@@ -100,42 +100,17 @@ add_custom_command(
 # Include generated *.pb.h files
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
-
-add_executable(wave_server
-    wave_server.cc
-    ${hw_proto_srcs}
-    ${hw_grpc_srcs})
-target_link_libraries(wave_server
-    ${_GRPC_GRPCPP_UNSECURE}
-    ${_PROTOBUF_LIBPROTOBUF}
-    pthread)
-target_include_directories(wave_server SYSTEM PRIVATE
-    ${THIRDPARTY_PREFIX}/third_party/args)
-
-add_executable(wave_client
-    wave_client.cc
-    wave_client_main.cc
-    ${hw_proto_srcs}
-    ${hw_grpc_srcs})
-target_link_libraries(wave_client
-    ${_GRPC_GRPCPP_UNSECURE}
-    ${_PROTOBUF_LIBPROTOBUF}
-    pthread)
-target_include_directories(wave_client SYSTEM PRIVATE
-    ${THIRDPARTY_PREFIX}/third_party/args)
-
-
 add_executable(wave_test
     wave_test.cc
     wave_client.cc
     ${hw_proto_srcs}
     ${hw_grpc_srcs}
-    ${THIRDPARTY_PREFIX}/third_party/google_test/googletest/src/gtest-all.cc
-    ${THIRDPARTY_PREFIX}/third_party/google_test/googletest/src/gtest_main.cc
+    google_test/googletest/src/gtest-all.cc
+    google_test/googletest/src/gtest_main.cc
 )
 target_include_directories(wave_test SYSTEM PRIVATE
-    ${THIRDPARTY_PREFIX}/third_party/google_test/googletest
-    ${THIRDPARTY_PREFIX}/third_party/google_test/googletest/include)
+    google_test/googletest
+    google_test/googletest/include)
 target_link_libraries(wave_test
     ${_GRPC_GRPCPP_UNSECURE}
     ${_PROTOBUF_LIBPROTOBUF}

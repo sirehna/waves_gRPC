@@ -2,11 +2,9 @@ version: '3'
 services:
   server:
     build: docker_wave_server
-    ports:
-    - "50051:50051"
     entrypoint: ["/usr/wave_server", "--spectrum", "y"]
   test:
-    image: "docker_wave_test:latest"
+    build: docker_wave_test
     depends_on:
-    - "server"
-    command: ["/usr/wait-for-it.sh", "server:50051", "--", "/usr/wave_test"]
+    - server
+    entrypoint: ["/usr/wait-for-it.sh", "server:50051", "--", "/usr/wave_test"]
