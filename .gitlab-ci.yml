@@ -24,13 +24,14 @@ report:
    stage: report
    script:
    - make report
-   paths:
-   - performance.html
+   artifacts:
+     paths:
+     - performance.html
 
 pages:
   stage: deploy
   dependencies:
-  - inline
+  - report
   script:
   - mkdir -p public
   - mv performance.html public/
