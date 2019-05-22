@@ -1,10 +1,15 @@
-# Numerical CPP Demo with GRPC and Docker
+# Numerical C++ Demo with gRPC and Docker
 
 ## How to run it
+
+```bash
+make
 ```
-$ make dc_test
-$ make dc_stop
-```
+
+- `make cpp-perf-test`: Runs benchmarks for various ways of encoding the wave data. This was used to choose the proto definition for the wave services.
+- `make gtest`: Illustrates how we can use gRPC from google test
+- `make ghz-perf-test`: Uses [ghz](https://github.com/bojand/ghz) to measure the gRPC server's general performance
+
 
 The client sends a request to the server with parameters x, y and t, the server computes the elevation z (using hard-coded discrete wave spectrum values), and sends it back.
 
@@ -13,7 +18,7 @@ Example adapted from https://grpc.io/docs/tutorials/basic/c.html#example-code-an
 ## .proto file
 `wave.proto`
 
-Here are defined data and services.
+This file defines the data structures and the RPC services.
 
 ## Unary implementation
 - Files concerned: `wave_client` and `wave_server`
