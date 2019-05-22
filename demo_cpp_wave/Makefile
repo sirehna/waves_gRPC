@@ -14,8 +14,8 @@
 
 all: dc_test
 
-debian-grpc: debian_grpc/Dockerfile
-	docker build -t debian_grpc debian_grpc
+debian-grpc: debian-grpc/Dockerfile
+	docker build -t debian-grpc debian-grpc
 
 cmake: debian-grpc
 	mkdir -p build_debian
@@ -24,7 +24,7 @@ cmake: debian-grpc
 	    -v $(shell pwd)/../third_party:/third_party \
 	    -u $(shell id -u):$(shell id -g) \
 	    -w /shared/build_debian \
-	    debian_grpc \
+	    debian-grpc \
 	    cmake -Wno-dev \
 	          -G Ninja \
 	          -DCMAKE_BUILD_TYPE=Relase \
@@ -37,7 +37,7 @@ build: cmake
 	    -v $(shell pwd)/../third_party:/third_party \
 	    -u $(shell id -u):$(shell id -g) \
 	    -w /shared/build_debian \
-	    debian_grpc \
+	    debian-grpc \
 	    ninja
 
 docker_server:build
