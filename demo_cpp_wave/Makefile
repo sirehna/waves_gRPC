@@ -21,8 +21,8 @@ dc_test: debian-grpc
 	@docker-compose -f compose_demo.yml up -t 0 --exit-code-from client --abort-on-container-exit --build
 
 dc_gtest: debian-grpc
-	@docker-compose -f compose_test.yml up -t 0 --exit-code-from test --abort-on-container-exit --build
+	@docker-compose -f compose_test.yml up -t 0 --exit-code-from client --abort-on-container-exit --build
 
 dc_perf: debian-grpc
-	@docker-compose -f compose_ghz.yml up -t 0 --exit-code-from client_ghz --abort-on-container-exit --build
+	@docker-compose -f compose_ghz.yml up -t 0 --exit-code-from client --abort-on-container-exit --build
 

@@ -3,7 +3,7 @@ services:
   server:
     build: wave_server
     entrypoint: ["/usr/wave_server", "--spectrum", "y"]
-  test:
+  client:
     build: docker_wave_test
     depends_on:
     - server

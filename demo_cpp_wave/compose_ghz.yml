@@ -3,7 +3,7 @@ services:
   server:
     build: wave_server
     entrypoint: ["/usr/wave_server", "--spectrum", "y"]
-  client_ghz:
+  client:
     build: ghz
     depends_on:
     - server
