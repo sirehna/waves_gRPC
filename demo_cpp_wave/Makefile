@@ -7,6 +7,7 @@ debian-grpc: debian-grpc/Dockerfile
 
 cpp-perf-test: debian-grpc compose-cpp-perf-test.yml
 	@CURRENT_UID=$(shell id -u):$(shell id -g) docker-compose -f compose-cpp-perf-test.yml up -t 0 --exit-code-from client --abort-on-container-exit --build
+	docker-compose -f compose-cpp-perf-test.yml ps | grep client | awk '{print $$1}' | xargs -n1 docker logs > performance.md
 
 gtest: debian-grpc compose-gtest.yml
 	@CURRENT_UID=$(shell id -u):$(shell id -g) docker-compose -f compose-gtest.yml up -t 0 --exit-code-from client --abort-on-container-exit --build
