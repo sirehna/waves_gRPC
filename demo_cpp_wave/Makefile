@@ -11,5 +11,5 @@ cpp-perf-test: debian-grpc compose-cpp-perf-test.yml
 gtest: debian-grpc compose-gtest.yml
 	@docker-compose -f compose-gtest.yml up -t 0 --exit-code-from client --abort-on-container-exit --build
 
-ghz-perf-test: debian-grpc compose_ghz.yml
-	@docker-compose -f compose_ghz.yml up -t 0 --exit-code-from client --abort-on-container-exit --build
+ghz-perf-test: debian-grpc compose-ghz-perf-test.yml
+	@docker-compose -f compose-ghz-perf-test.yml up -t 0 --exit-code-from client --abort-on-container-exit --build
