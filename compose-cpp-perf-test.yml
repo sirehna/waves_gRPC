@@ -5,7 +5,7 @@ services:
     user: ${CURRENT_UID}
     entrypoint: ["/usr/wave_server", "--spectrum", "n"]
   client:
-    build: wave_client
+    build: cpp_client
     user: ${CURRENT_UID}
     depends_on:
     - server
