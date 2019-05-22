@@ -3,3 +3,5 @@ build*
 .cproject
 .project
 .vscode
+performance.html
+performance.md
