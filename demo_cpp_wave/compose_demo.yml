@@ -1,0 +1,10 @@
+version: '3'
+services:
+  server:
+    build: docker_wave_server
+    entrypoint: ["/usr/wave_server", "--spectrum", "n"]
+  client:
+    build: docker_wave_client
+    depends_on:
+      - server
+    entrypoint: ["/usr/wait-for-it.sh", "server:50051", "--", "time", "/usr/wave_client" , "--ip", "server", "--port", "50051"]

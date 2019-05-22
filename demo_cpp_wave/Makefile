@@ -40,10 +40,6 @@ build: cmake
 	    debian-grpc \
 	    ninja
 
-docker_client:build
-	cp build_debian/wave_client docker_wave_client/.
-	cd docker_wave_client && docker build . -t docker_wave_client && rm wave_client && cd ..
-
 docker_test:build
 	cp build_debian/wave_test docker_wave_test/.
 	cd docker_wave_test && docker build . -t docker_wave_test && rm wave_test && cd ..
@@ -51,22 +47,10 @@ docker_test:build
 docker_ghz:
 	cd docker_wave_ghz && docker build . -t docker_wave_ghz && cd ..
 
-docker_images:docker_client
-	echo "Deploying server and client"
+dc_test:
+	@docker-compose -f compose_demo.yml up -t 0 --exit-code-from client --abort-on-container-exit --build
 
-dc_test:docker_images
-	cd compose_demo && docker-compose up --force-recreate -d
-	# cd compose_demo && sleep 0.5 && \
-	#     while [ -z "`docker-compose ps | grep client | grep Exit`" ]; do echo "Client terminated"; done
-	cd compose_demo && sleep 55 &&\
-	    result=`docker-compose ps | grep client | grep "Exit 0"` || true && \
-	    echo "$${result}" && \
-	    if [ -n "$${result}" ]; \
-	       then echo "Success" && docker-compose logs -t; \
-	       else echo "Failure" && docker-compose logs -t; \
-	       fi
-
-dc_gtest: docker_test
+dc_gtest:
 	@docker-compose -f compose_test.yml up -t 0 --exit-code-from test --abort-on-container-exit --build
 
 dc_perf:docker_server docker_ghz
