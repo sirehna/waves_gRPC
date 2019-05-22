@@ -5,8 +5,8 @@ all: gtest
 debian-grpc: debian-grpc/Dockerfile
 	docker build -t debian-grpc debian-grpc
 
-cpp-perf-test: debian-grpc compose_demo.yml
-	@docker-compose -f compose_demo.yml up -t 0 --exit-code-from client --abort-on-container-exit --build
+cpp-perf-test: debian-grpc compose-cpp-perf-test.yml
+	@docker-compose -f compose-cpp-perf-test.yml up -t 0 --exit-code-from client --abort-on-container-exit --build
 
 gtest: debian-grpc compose-gtest.yml
 	@docker-compose -f compose-gtest.yml up -t 0 --exit-code-from client --abort-on-container-exit --build
