@@ -8,9 +8,17 @@ git_submodule:
      - git submodule sync --recursive
      - git submodule update --init --recursive
 
-test:
+gtest:
    stage: test
    script:
-     - cd demo_cpp_wave && make gtest
-     - cd demo_cpp_wave && make ghz-perf-test
-     - cd demo_cpp_wave && make cpp-perf-test
+     - make gtest
+
+ghz-perf:
+   stage: test
+   script:
+     - make ghz-perf-test
+
+cpp-perf:
+   stage: test
+   script:
+     - make cpp-perf-test
