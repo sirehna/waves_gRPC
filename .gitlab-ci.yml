@@ -1,7 +1,5 @@
 stages:
   - git_submodule
-  - lint
-  - build
   - test
 
 git_submodule:
@@ -10,27 +8,9 @@ git_submodule:
      - git submodule sync --recursive
      - git submodule update --init --recursive
 
-lint:
-   stage: lint
-   script:
-     - cd demo_cpp_hello_world &&
-       if grep --recursive --include={*.cpp,*.md,*.yml,*.cmake,*.xml,*.html,*.in,*.txt}
-               --exclude-dir={Compil,CompilCMake} -P "\t" . ;
-       then echo "Tabs found in the lines shown above."; false;
-       else echo "Repo passed no-tabs check."; fi &&
-       cd ..
-
-build:
-   stage: build
-   script:
-     - cd demo_cpp_hello_world && make build && cd ..
-     - cd demo_cpp_wave && make build && cd ..
-
 test:
    stage: test
    script:
-     - cd demo_cpp_hello_world && make test && make stop && cd ..
-     - cd demo_cpp_hello_world && make dc_gtest && make dc_stop && cd ..
-     - cd demo_cpp_hello_world && make dc_test && make dc_stop && cd ..
-     - cd demo_cpp_wave && make dc_test && make dc_stop && cd ..
-     - cd demo_cpp_wave && make dc_gtest && make dc_stop && cd ..
+     - cd demo_cpp_wave && make gtest
+     - cd demo_cpp_wave && make ghz-perf-test
+     - cd demo_cpp_wave && make cpp-perf-test
