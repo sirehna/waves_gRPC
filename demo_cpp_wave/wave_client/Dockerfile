@@ -15,6 +15,7 @@ RUN apt-get update && \
     apt-get install --yes --no-install-recommends \
         time
 ADD wait-for-it.sh /usr/.
-RUN chmod 740 /usr/wait-for-it.sh
+RUN chmod 777 /usr/wait-for-it.sh
 COPY --from=builder /work/build/wave_client /usr
+RUN chmod 777 /usr/wave_client
 CMD /usr/wave_client

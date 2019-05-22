@@ -2,9 +2,11 @@ version: '3'
 services:
   server:
     build: wave_server
+    user: ${CURRENT_UID}
     entrypoint: ["/usr/wave_server", "--spectrum", "y"]
   client:
     build: gtest
+    user: ${CURRENT_UID}
     depends_on:
     - server
     entrypoint: ["/usr/wait-for-it.sh", "server:50051", "--", "/usr/wave_test"]

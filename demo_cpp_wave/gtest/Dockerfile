@@ -13,6 +13,6 @@ RUN cd build && ninja wave_test
 
 FROM debian:9-slim
 ADD wait-for-it.sh /usr/.
-RUN chmod 740 /usr/wait-for-it.sh
 COPY --from=builder /work/build/wave_test /usr
+RUN chmod 777 /usr/wait-for-it.sh /usr/wave_test
 ENTRYPOINT ["/usr/wave_test"]
