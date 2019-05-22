@@ -15,7 +15,7 @@
 all: dc_test
 
 cmake:
-	docker build -t debian_grpc .
+	docker build -t debian_grpc debian_grpc
 	mkdir -p build_debian
 	docker run --rm \
 	    -v $(shell pwd):/shared \
