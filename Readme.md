@@ -1,5 +1,11 @@
 # Numerical C++ Demo with gRPC and Docker
 
+## Performances
+
+The generated performance report can be seen here:
+
+[https://sirehna.gitlab-pages.sirehna.com/demo_docker_grpc](https://sirehna.gitlab-pages.sirehna.com/demo_docker_grpc).
+
 ## How to run it
 
 ```bash
