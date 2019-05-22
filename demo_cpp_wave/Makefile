@@ -1,4 +1,4 @@
-.PHONY: all build cmake stop test
+.PHONY: all build cmake debian-grpc stop test
 
 # make dc_test -> performs grpc test with docker-compose, it will
 #                 create docker base image
@@ -14,8 +14,10 @@
 
 all: dc_test
 
-cmake:
+debian-grpc: debian_grpc/Dockerfile
 	docker build -t debian_grpc debian_grpc
+
+cmake: debian-grpc
 	mkdir -p build_debian
 	docker run --rm \
 	    -v $(shell pwd):/shared \
