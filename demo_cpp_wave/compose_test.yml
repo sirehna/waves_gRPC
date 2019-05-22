@@ -4,7 +4,7 @@ services:
     build: wave_server
     entrypoint: ["/usr/wave_server", "--spectrum", "y"]
   client:
-    build: docker_wave_test
+    build: gtest
     depends_on:
     - server
     entrypoint: ["/usr/wait-for-it.sh", "server:50051", "--", "/usr/wave_test"]
