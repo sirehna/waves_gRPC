@@ -4,7 +4,7 @@
 
 The generated performance report can be seen here:
 
-[https://sirehna.gitlab-pages.sirehna.com/demo_docker_grpc](https://sirehna.gitlab-pages.sirehna.com/demo_docker_grpc).
+[https://sirehna.gitlab-pages.sirehna.com/demo_docker_grpc/performance.html](https://sirehna.gitlab-pages.sirehna.com/demo_docker_grpc/performance.html).
 
 ## How to run it
 
