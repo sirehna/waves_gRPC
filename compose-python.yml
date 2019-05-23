@@ -1,0 +1,10 @@
+version: '3'
+services:
+  server:
+    build: python_server
+    user: ${CURRENT_UID}
+  client:
+    build: python_client
+    user: ${CURRENT_UID}
+    depends_on:
+    - server

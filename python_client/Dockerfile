@@ -5,5 +5,5 @@ RUN pip3 install --upgrade pip  \
        grpcio-tools
 ADD waves.proto .
 RUN python3 -m grpc_tools.protoc -I . --python_out=. --grpc_python_out=. waves.proto
-ADD waves.py wave_model_interface.py wave_model_stub.py ./
-ENTRYPOINT python3 waves.py
+ADD waves.py .
+ENTRYPOINT ["python3", "waves.py"]
