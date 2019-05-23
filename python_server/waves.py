@@ -1,16 +1,8 @@
-from concurrent import futures
-import time
-import math
 import logging
-
-import grpc
-
 import waves_pb2
 import waves_pb2_grpc
 
-from wave_model_stub import WaveModelStub 
 
-_ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
 service_name = "waves-server"
 
@@ -82,20 +74,4 @@ class WavesServicer(waves_pb2_grpc.WavesServicer):
     return response
 
 
-def serve():
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    waves_pb2_grpc.add_WavesServicer_to_server(
-        WavesServicer(WaveModelStub()), server)
-    server.add_insecure_port('[::]:50051')
-    server.start()
-    try:
-        while True:
-            time.sleep(_ONE_DAY_IN_SECONDS)
-    except KeyboardInterrupt:
-        server.stop(0)
 
-
-if __name__ == '__main__':
-    logger.info('Starting waves server...')
-    serve()
-    logger.info('Stopped waves server')
