@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+
+service Waves
+{
+    rpc set_parameters(SetParameterRequest) returns (SetParameterResponse);
+    rpc elevations(XYTGrid)                 returns (XYZTGrid);
+    rpc dynamic_pressures(XYZTGrid)         returns (DynamicPressuresResponse);
+    rpc orbital_velocities(XYZTGrid)        returns (OrbitalVelocitiesResponse);
+    rpc spectrum(SpectrumRequest)           returns (SpectrumResponse);
+}
+
+message SetParameterRequest
+{
+    string parameters = 1;
+}
+
+message SetParameterResponse
+{
+    string error_message = 1;
+}
+
+message XYTGrid
+{
+    repeated double x = 1;
+    repeated double y = 2;
+    double t = 3;
+}
+
+message XYZTGrid
+{
+    repeated double x = 1;
+    repeated double y = 2;
+    repeated double z = 3;
+    double t = 4;
+}
+
+message DynamicPressuresResponse
+{
+    repeated double x = 1;
+    repeated double y = 2;
+    repeated double z = 3;
+    double t = 4;
+    repeated double pdyn = 5;
+}
+
+message OrbitalVelocitiesResponse
+{
+    repeated double x = 1;
+    repeated double y = 2;
+    repeated double z = 3;
+    double t = 4;
+    repeated double vx = 5;
+    repeated double vy = 6;
+    repeated double vz = 7;
+}
+
+message SpectrumRequest
+{
+    double t = 1;
+}
+
+message WaveSpectrumElement
+{
+    double a = 1;       //!< Amplitude (in m)
+    double omega = 2;   //!< Angular frequencies the spectrum was discretized at (in rad/s)
+    double psi = 3;     //!< Directions between 0 & 2pi the spatial spreading was discretized at (in rad)
+    double k = 4;       //!< Discretized wave number (for each frequency) in rad/m
+    double phase = 5;   //!< Random phases, for each (direction,frequency) couple (but time invariant) in radian
+}
+
+message SpectrumResponse
+{
+    repeated WaveSpectrumElement spectrum_element = 1;
+}

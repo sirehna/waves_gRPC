@@ -1,4 +1,4 @@
-.PHONY: all cpp-perf-test debian-grpc ghz-perf-test report test
+.PHONY: all cpp-perf-test debian-grpc ghz-perf-test python report test
 
 all: gtest
 
@@ -16,6 +16,13 @@ gtest: debian-grpc compose-gtest.yml
 
 ghz-perf-test: debian-grpc compose-ghz-perf-test.yml
 	@CURRENT_UID=$(shell id -u):$(shell id -g) docker-compose -f compose-ghz-perf-test.yml up -t 0 --exit-code-from client --abort-on-container-exit --build
+
+python: compose-python.yml python_client/* python_server/* waves.proto
+	@cp waves.proto python_client
+	@cp waves.proto python_server
+	@CURRENT_UID=$(shell id -u):$(shell id -g) docker-compose -f compose-python.yml up -t 0 --exit-code-from client --abort-on-container-exit --build --force-recreate
+	@rm python_client/waves.proto
+	@rm python_server/waves.proto
 
 report: performance.html
 

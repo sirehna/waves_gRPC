@@ -20,6 +20,11 @@ ghz-perf:
    script:
    - make ghz-perf-test
 
+python:
+   stage: test
+   script:
+   - make python
+
 report:
    stage: report
    script:
