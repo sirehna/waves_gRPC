@@ -12,52 +12,52 @@ service Waves
 
 message SetParameterRequest
 {
-    string parameters = 1;
+    string parameters = 1; // YAML string containing the parameters to set for this particular model.
 }
 
 message SetParameterResponse
 {
-    string error_message = 1;
+    string error_message = 1; // Possible errors in setting up the waves server with the supplied parameters. An empty string means the operation completed successfully.
 }
 
 message XYTGrid
 {
-    repeated double x = 1;
-    repeated double y = 2;
-    double t = 3;
+    repeated double x = 1; // Positions (in meters) at which we want the value of interest. Projected on the X-axis of the Earth-centered, Earth-fixed North-East-Down reference frame. Should be the same size as y.
+    repeated double y = 2; // Positions (in meters) at which we want the value of interest. Projected on the Y-axis of the Earth-centered, Earth-fixed North-East-Down reference frame. Should be the same size as x.
+    double t = 3;          // Simulation time (in seconds). All values are calculated at that instant. The documentation of each waves model should describe how the phases are defined.
 }
 
 message XYZTGrid
 {
-    repeated double x = 1;
-    repeated double y = 2;
-    repeated double z = 3;
-    double t = 4;
+    repeated double x = 1; // Positions (in meters) at which we want the value of interest. Projected on the X-axis of the Earth-centered, Earth-fixed North-East-Down reference frame. Should be the same size as y and z.
+    repeated double y = 2; // Positions (in meters) at which we want the value of interest. Projected on the Y-axis of the Earth-centered, Earth-fixed North-East-Down reference frame. Should be the same size as x and z.
+    repeated double z = 3; // Positions (in meters) at which we want the value of interest. Projected on the Z-axis of the Earth-centered, Earth-fixed North-East-Down reference frame. Should be the same size as x and y.
+    double t = 4;          // Simulation time (in seconds). All values are calculated at that instant. The documentation of each waves model should describe how the phases are defined.
 }
 
 message DynamicPressuresResponse
 {
-    repeated double x = 1;
-    repeated double y = 2;
-    repeated double z = 3;
-    double t = 4;
-    repeated double pdyn = 5;
+    repeated double x = 1; // Positions (in meters) at which the dynamic pressure was computed. Projected on the X-axis of the Earth-centered, Earth-fixed North-East-Down reference frame. Should be the same size as y, z and pdyn.
+    repeated double y = 2; // Positions (in meters) at which the dynamic pressure was computed. Projected on the Y-axis of the Earth-centered, Earth-fixed North-East-Down reference frame. Should be the same size as x, z and pdyn.
+    repeated double z = 3; // Positions (in meters) at which the dynamic pressure was computed. Projected on the Z-axis of the Earth-centered, Earth-fixed North-East-Down reference frame. Should be the same size as x, y and pdyn.
+    double t = 4;          // Simulation time (in seconds). All values were calculated at that instant. The documentation of each waves model should describe how the phases are defined.
+    repeated double pdyn = 5; // Dynamic pressure (in Pascal) for each (x,y,z) value at t. Should be the same size as x, y and z.
 }
 
 message OrbitalVelocitiesResponse
 {
-    repeated double x = 1;
-    repeated double y = 2;
-    repeated double z = 3;
-    double t = 4;
-    repeated double vx = 5;
-    repeated double vy = 6;
-    repeated double vz = 7;
+    repeated double x = 1; // Positions (in meters) at which the orbital velocity was computed. Projected on the X-axis of the Earth-centered, Earth-fixed North-East-Down reference frame. Should be the same size as y, z, vx, vy and vz.
+    repeated double y = 2; // Positions (in meters) at which the orbital velocity was computed. Projected on the Y-axis of the Earth-centered, Earth-fixed North-East-Down reference frame. Should be the same size as x, z, vx, vy and vz.
+    repeated double z = 3; // Positions (in meters) at which the orbital velocity was computed. Projected on the Z-axis of the Earth-centered, Earth-fixed North-East-Down reference frame. Should be the same size as x, y, vx, vy and vz.
+    double t = 4;          // Simulation time (in seconds). All values were calculated at that instant. The documentation of each waves model should describe how the phases are defined.
+    repeated double vx = 5; // Projection on the X-axis of the Earth-centered, Earth-fixed North-East-Down reference frame of the velocity of each partical. In meters per second. Should be the same size as x, y, z, vy and vz.
+    repeated double vy = 6; // Projection on the Y-axis of the Earth-centered, Earth-fixed North-East-Down reference frame of the velocity of each partical. In meters per second. Should be the same size as x, y, z, vx and vz.
+    repeated double vz = 7; // Projection on the Z-axis of the Earth-centered, Earth-fixed North-East-Down reference frame of the velocity of each partical. In meters per second. Should be the same size as x, y, z, vx and vy.
 }
 
 message SpectrumRequest
 {
-    double t = 1;
+    double t = 1; // Simulation time (in seconds). The linearization is valid at that instant. The documentation of each waves model should describe how the phases are defined.
 }
 
 message WaveSpectrumElement
