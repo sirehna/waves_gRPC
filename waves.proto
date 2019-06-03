@@ -57,7 +57,9 @@ message OrbitalVelocitiesResponse
 
 message SpectrumRequest
 {
-    double t = 1; // Simulation time (in seconds). The linearization is valid at that instant. The documentation of each waves model should describe how the phases are defined.
+    double x = 1; // Positions (in meters) at which we want the equivalent lineat spectrum. Projected on the X-axis of the Earth-centered, Earth-fixed North-East-Down reference frame.
+    double y = 2; // Positions (in meters) at which we want the equivalent lineat spectrum. Projected on the Y-axis of the Earth-centered, Earth-fixed North-East-Down reference frame.
+    double t = 3; // Simulation time (in seconds). The linearization is valid at that instant. The documentation of each waves model should describe how the phases are defined.
 }
 
 message WaveSpectrumElement
