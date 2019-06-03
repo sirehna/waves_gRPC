@@ -70,7 +70,13 @@ message WaveSpectrumElement
     double phase = 4;   // Random phases, for each (direction,frequency) couple (but time invariant) in radian
 }
 
+message WaveSpectrum
+{
+    double psi = 1;     // Directions between [0, 2pi[ the spatial spreading was discretized at (in rad)
+    repeated WaveSpectrumElement spectrum_element = 2;
+}
+
 message SpectrumResponse
 {
-    repeated WaveSpectrumElement spectrum_element = 1;
+    repeated WaveSpectrum spectrum = 1;
 }
