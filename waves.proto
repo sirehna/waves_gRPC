@@ -8,6 +8,8 @@ service Waves
     rpc dynamic_pressures(XYZTGrid)         returns (DynamicPressuresResponse);
     rpc orbital_velocities(XYZTGrid)        returns (OrbitalVelocitiesResponse);
     rpc spectrum(SpectrumRequest)           returns (SpectrumResponse);
+    rpc angular_frequencies_for_rao(AngularFrequenciesRequest) returns (AngularFrequencies);
+    rpc directions_for_rao(DirectionsRequest)                  returns (Directions);
 }
 
 message SetParameterRequest
@@ -79,4 +81,22 @@ message WaveSpectrum
 message SpectrumResponse
 {
     repeated WaveSpectrum spectrum = 1;
+}
+
+message AngularFrequenciesRequest
+{
+}
+
+message DirectionsRequest
+{
+}
+
+message AngularFrequencies
+{
+    repeated double omegas = 1; // Angular frequencies the spectrum was discretized at (in rad/s). Used, for example, when interpolating the wave RAOs.
+}
+
+message Directions
+{
+    repeated double psis = 1; // Directions between [0, 2pi[ the spatial spreading was discretized at (in rad). Used, for example, when interpolating the wave RAOs.
 }
