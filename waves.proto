@@ -3,11 +3,11 @@ syntax = "proto3";
 
 service Waves
 {
-    rpc set_parameters(SetParameterRequest) returns (SetParameterResponse);
-    rpc elevations(XYTGrid)                 returns (XYZTGrid);
-    rpc dynamic_pressures(XYZTGrid)         returns (DynamicPressuresResponse);
-    rpc orbital_velocities(XYZTGrid)        returns (OrbitalVelocitiesResponse);
-    rpc spectrum(SpectrumRequest)           returns (SpectrumResponse);
+    rpc set_parameters(SetParameterRequest)                    returns (SetParameterResponse);
+    rpc elevations(XYTGrid)                                    returns (XYZTGrid);
+    rpc dynamic_pressures(XYZTGrid)                            returns (DynamicPressuresResponse);
+    rpc orbital_velocities(XYZTGrid)                           returns (OrbitalVelocitiesResponse);
+    rpc spectrum(SpectrumRequest)                              returns (SpectrumResponse);
     rpc angular_frequencies_for_rao(AngularFrequenciesRequest) returns (AngularFrequencies);
     rpc directions_for_rao(DirectionsRequest)                  returns (Directions);
 }
