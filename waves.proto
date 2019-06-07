@@ -64,23 +64,19 @@ message SpectrumRequest
     double t = 3; // Simulation time (in seconds). The linearization is valid at that instant. The documentation of each waves model should describe how the phases are defined.
 }
 
-message WaveSpectrumElement
+message PhasesForEachFrequency
 {
-    double a = 1;       // Wave amplitude (in m)
-    double omega = 2;   // Angular frequencies the spectrum was discretized at (in rad/s)
-    double k = 3;       // Discretized wave number (for each frequency) in rad/m
-    double phase = 4;   // Random phases, for each (direction,frequency) couple (but time invariant) in radian
-}
-
-message WaveSpectrum
-{
-    double psi = 1;     // Directions between [0, 2pi[ the spatial spreading was discretized at (in rad)
-    repeated WaveSpectrumElement spectrum_element = 2;
+    repeated double phase = 1; //!< Random phase (should have the same size as omega in SpectrumResponse. In radian.
 }
 
 message SpectrumResponse
 {
-    repeated WaveSpectrum spectrum = 1;
+    repeated double Si = 1;                    // Discretized spectral density for each omega (should therefore be the same size as omega) (in s m^2/rad)
+    repeated double Dj = 2;                    // Spatial spreading for each psi (should therefore be the same size as psi) (in 1/rad)
+    repeated double omega = 3;                 // Angular frequencies the spectrum was discretized at (in rad/s)
+    repeated double psi = 4;                   // Directions between 0 & 2pi the spatial spreading was discretized at (in rad)
+    repeated double k = 5;                     // Discretized wave number for each frequency (should therefore be the same size as omega) in rad/m
+    repeated PhasesForEachFrequency phase = 6; // Random phases, for each (direction,frequency) couple (but time invariant), should have the same size as psi. In radian.
 }
 
 message AngularFrequenciesRequest
