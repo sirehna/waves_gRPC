@@ -1,6 +1,6 @@
 .PHONY: all cpp-perf-test debian-grpc ghz-perf-test pylama python report test
 
-all: gtest
+all: gtest python
 
 debian-grpc: debian-grpc/Dockerfile
 	docker build -t debian-grpc debian-grpc
