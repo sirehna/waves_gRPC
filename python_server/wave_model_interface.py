@@ -123,3 +123,73 @@ class AbstractWaveModel:
         """
         raise NotImplementedError('orbital_velocity ' + NOT_IMPLEMENTED)
 
+    def spectrum(self, x, y, t):
+        """Linear spectrum that can be used by xdyn's diffraction module.
+
+        Parameters
+        ----------
+        x : float
+            Position (in meters) at which we want the (linearized) spectrum.
+            Projected on the X-axis of the Earth-centered, Earth-fixed
+            North-East-Down reference frame.
+        y : float
+            Position (in meters) at which we want the (linearized) spectrum.
+            Projected on the Y-axis of the Earth-centered, Earth-fixed
+            North-East-Down reference frame.
+        t : float
+            Simulation time (in seconds). Date at which we want the
+            (linearized) spectrum.
+
+        Returns
+        -------
+        dict
+            Should contain the following fields:
+            - si (list of floats): Discretized spectral density for each
+              omega (should therefore be the same size as omega).
+              In s m^2/rad.
+            - dj (list of floats): Spatial spreading for each psi (should
+              therefore be the same size as psi. In 1/rad.
+            - omega (list of floats): Angular frequencies the spectrum was
+              discretized at. In rad/s.
+            - psi (list of floats): Directions between 0 & 2pi the spatial
+              spreading was discretized at. In rad.
+            - k (list of floats): Discretized wave number for each
+              frequency (should therefore be the same size as omega).
+              In rad/m.
+            - phase (list of dict): Random phases, for each
+              (direction,frequency) couple (but time invariant), should
+              have the same size as psi. In radian.
+              Each element is a dict containing the following fields:
+              - phase (list of floats): Random phase. Should have the same
+                size as omega in parent dict. In radian.
+
+        """
+        raise NotImplementedError('spectrum ' + NOT_IMPLEMENTED)
+
+    def angular_frequencies_for_rao(self):
+        """Get angular frequencies the wave spectrum is discretized at.
+
+        Returns
+        -------
+        list of floats
+            Angular frequencies the spectrum was discretized at (in rad/s).
+            Used, for example, when interpolating the wave RAOs.
+
+        """
+        raise NotImplementedError('angular_frequencies_for_rao '
+                                  + NOT_IMPLEMENTED)
+
+    def directions_for_rao(self):
+        """Get the incidences the directional spreading is discretized at.
+
+        Returns
+        -------
+        list of floats
+          Wave incidences the spectrum was discretized at (in rad).
+          0° is for waves coming from the North.
+          90° for waves coming from the East.
+          Used, for example, when interpolating the wave RAOs.
+
+        """
+        raise NotImplementedError('angular_frequencies_for_rao '
+                                  + NOT_IMPLEMENTED)
