@@ -1,9 +1,11 @@
 """Integrates a scalar wave model in a gRPC server."""
 
+from difflib import SequenceMatcher
 import logging
 import waves_pb2
 import waves_pb2_grpc
 import grpc
+import yaml
 
 SERVICE_NAME = "waves-server"
 
@@ -14,6 +16,20 @@ logging.basicConfig(
     datefmt='%d-%m-%Y:%H:%M:%S')
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.INFO)
+
+
+def similar(first_string, second_string):
+    """Return a score between 0 (strings are different) and 1 (identical)."""
+    return SequenceMatcher(None, first_string, second_string).ratio()
+
+
+def closest_match(expected_keys, unknown_key):
+    """Give a suggestion for the parameter name."""
+    if expected_keys:
+        return "\nMaybe you meant: " + \
+         max(expected_keys, key=lambda k: similar(unknown_key, k)) + \
+         " <-> " + unknown_key + "?"
+    return ""
 
 
 class WavesServicer(waves_pb2_grpc.WavesServicer):
@@ -49,9 +65,11 @@ class WavesServicer(waves_pb2_grpc.WavesServicer):
         try:
             self.model.set_parameters(request.parameters)
         except KeyError as exception:
+            match = closest_match(list(yaml.safe_load(request.parameters)),
+                                  str(exception).replace("'", ""))
             context.set_details("Unable to find key "
                                 + str(exception)
-                                + " in the YAML. ")
+                                + " in the YAML. " + match)
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
             return waves_pb2.SetParameterResponse(error_message=repr(exception))
         except Exception as exception:
