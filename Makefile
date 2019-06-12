@@ -1,6 +1,6 @@
-.PHONY: all cpp-perf-test debian-grpc ghz-perf-test python report test
+.PHONY: all cpp-perf-test debian-grpc ghz-perf-test pylama python report test
 
-all: gtest
+all: gtest python
 
 debian-grpc: debian-grpc/Dockerfile
 	docker build -t debian-grpc debian-grpc
@@ -17,7 +17,12 @@ gtest: debian-grpc compose-gtest.yml
 ghz-perf-test: debian-grpc compose-ghz-perf-test.yml
 	@CURRENT_UID=$(shell id -u):$(shell id -g) docker-compose -f compose-ghz-perf-test.yml up -t 0 --exit-code-from client --abort-on-container-exit --build
 
-python: compose-python.yml python_client/* python_server/* waves.proto
+pylama:
+	cd pylama && make
+
+python: compose-python.yml python_client/* python_server/* waves.proto pylama
+	@docker run -t --rm -v $(shell pwd):/work -w /work -u $(shell id -u):$(shell id -g) pylama /work/python_server
+	@docker run -t --rm -v $(shell pwd):/work -w /work -u $(shell id -u):$(shell id -g) pylama /work/python_client
 	@cp waves.proto python_client
 	@cp waves.proto python_server
 	@CURRENT_UID=$(shell id -u):$(shell id -g) docker-compose -f compose-python.yml up -t 0 --exit-code-from client --abort-on-container-exit --build --force-recreate
