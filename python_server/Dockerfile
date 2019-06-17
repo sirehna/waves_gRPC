@@ -2,8 +2,12 @@ FROM python:3.6
 
 ADD requirements.txt .
 RUN pip3 install -r requirements.txt
-
-ADD waves.proto .
-RUN python3 -m grpc_tools.protoc -I . --python_out=. --grpc_python_out=. waves.proto
-ADD airy.py server.py wave_model_interface.py waves.py ./
-ENTRYPOINT python3 server.py
+RUN mkdir -p /usr/python
+RUN chmod a+rwx /usr/python
+ENV PYTHONPATH /usr/python
+RUN echo "#!/bin/bash" > entrypoint.sh
+RUN echo "python3 -m grpc_tools.protoc -I /proto --python_out=/usr/python --grpc_python_out=/usr/python/ waves.proto" >> entrypoint.sh
+RUN echo "python3 \"\$@\"" >> entrypoint.sh
+RUN chmod a+x entrypoint.sh
+ADD waves.py /usr/python
+ENTRYPOINT ["./entrypoint.sh"]

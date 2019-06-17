@@ -3,8 +3,14 @@ services:
   server:
     build: python_server
     user: ${CURRENT_UID}
+    entrypoint: ["/bin/bash", "entrypoint.sh", "/data/airy.py"]
+    volumes:
+    - ./python_server:/data
+    - .:/proto
   client:
     build: python_client
     user: ${CURRENT_UID}
+    volumes:
+    - .:/proto
     depends_on:
     - server

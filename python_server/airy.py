@@ -2,9 +2,10 @@
 
 import logging
 import math
-import numpy as np
 import yaml
-from wave_model_interface import AbstractWaveModel
+import numpy as np
+import waves
+
 
 SERVICE_NAME = "airy"
 
@@ -40,7 +41,7 @@ def pdyn_factor(k, z, eta):
     return 0 if (eta != 0 and z < eta) else math.exp(-k * z)
 
 
-class Airy(AbstractWaveModel):
+class Airy(waves.AbstractWaveModel):
     """Linear irregular waves in infinite depth.
 
     Using JONSWAP spectrum and single propagation direction. No stretching.
@@ -350,3 +351,9 @@ class Airy(AbstractWaveModel):
 
         """
         return self.directional_spectrum
+
+
+if __name__ == '__main__':
+    LOGGER.info('Starting Airy waves server...')
+    waves.serve(Airy())
+    LOGGER.info('Stopped Airy waves server')
