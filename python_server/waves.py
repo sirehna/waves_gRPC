@@ -177,8 +177,8 @@ class AbstractWaveModel:
 
         Returns
         -------
-        dict
-            Should contain the following fields:
+        list of dict
+            Each one should contain the following fields:
             - si (list of floats): Discretized spectral density for each
               omega (should therefore be the same size as omega).
               In s m^2/rad.
@@ -393,7 +393,7 @@ class WavesServicer(wave_grpc_pb2_grpc.WavesServicer):
         """
         LOGGER.info('Got spectrum request')
         try:
-            spectrum = self.model.spectrum(request.x, request.y, request.t)
+            spectra = self.model.spectrum(request.x, request.y, request.t)
         except NotImplementedError as exception:
             context.set_details(repr(exception))
             context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -401,11 +401,14 @@ class WavesServicer(wave_grpc_pb2_grpc.WavesServicer):
             context.set_details(repr(exception))
             context.set_code(grpc.StatusCode.UNKNOWN)
         response = wave_types_pb2.SpectrumResponse()
-        response.si[:] = spectrum.si
-        response.dj[:] = spectrum.dj
-        response.omega[:] = spectrum.omega
-        response.psi[:] = spectrum.psi
-        response.phase[:] = spectrum.phase
+        for spectrum in spectra:
+            s = wave_types_pb2.Spectrum()
+            s.si[:] = spectrum.si
+            s.dj[:] = spectrum.dj
+            s.omega[:] = spectrum.omega
+            s.psi[:] = spectrum.psi
+            s.phase[:] = spectrum.phase
+            response.spectrum.append(s)
         return response
 
     def angular_frequencies_for_rao(self, _, context):
