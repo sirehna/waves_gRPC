@@ -429,8 +429,11 @@ class WavesServicer(wave_grpc_pb2_grpc.WavesServicer):
         except Exception as exception:
             context.set_details(repr(exception))
             context.set_code(grpc.StatusCode.UNKNOWN)
-        response = wave_types_pb2.AngularFrequencies()
-        response.omegas[:] = omegas
+        response = wave_types_pb2.AngularFrequenciesResponse()
+        for omega in omegas:
+            o = wave_types_pb2.AngularFrequencies()
+            o.omegas[:] = omega
+            response.angular_frequencies.append(o)
         return response
 
     def directions_for_rao(self, _, context):

@@ -89,3 +89,8 @@ message Directions
 {
     repeated double psis = 1; // Directions between [0, 2pi[ the spatial spreading was discretized at (in rad). Used, for example, when interpolating the wave RAOs.
 }
+
+message AngularFrequenciesResponse
+{
+    repeated AngularFrequencies angular_frequencies = 1; // One per directional spectrum
+}
