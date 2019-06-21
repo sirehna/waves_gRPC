@@ -455,7 +455,10 @@ class WavesServicer(wave_grpc_pb2_grpc.WavesServicer):
             context.set_details(repr(exception))
             context.set_code(grpc.StatusCode.UNKNOWN)
         response = wave_types_pb2.Directions()
-        response.psis[:] = psis
+        for psi in psis:
+            p = wave_types_pb2.Directions()
+            p.psis[:] = psi
+            response.directions.append(p)
         return response
 
 

@@ -94,3 +94,8 @@ message AngularFrequenciesResponse
 {
     repeated AngularFrequencies angular_frequencies = 1; // One per directional spectrum
 }
+
+message DirectionsResponse
+{
+    repeated Directions directions = 1; // One per directional spectrum
+}
