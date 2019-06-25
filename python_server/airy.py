@@ -295,7 +295,7 @@ class Airy(waves.AbstractWaveModel):
             Used, for example, when interpolating the wave RAOs.
 
         """
-        return self.directional_spectrum['omegas']
+        return [self.directional_spectrum['omegas']]
 
     def directions_for_rao(self):
         """Get the incidences the directional spreading is discretized at.
@@ -309,7 +309,7 @@ class Airy(waves.AbstractWaveModel):
           Used, for example, when interpolating the wave RAOs.
 
         """
-        return self.directional_spectrum['psis']
+        return [self.directional_spectrum['psis']]
 
     def spectrum(self, x, y, t):
         """Linear spectrum that can be used by xdyn's diffraction module.
@@ -350,7 +350,7 @@ class Airy(waves.AbstractWaveModel):
               Each element should have the same size as omega. In radian.
 
         """
-        return self.directional_spectrum
+        return [self.directional_spectrum]
 
 
 if __name__ == '__main__':

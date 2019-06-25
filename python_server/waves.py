@@ -2,8 +2,8 @@
 
 from difflib import SequenceMatcher
 import logging
-import waves_pb2
-import waves_pb2_grpc
+import wave_types_pb2
+import wave_grpc_pb2_grpc
 import grpc
 import yaml
 from concurrent import futures
@@ -177,8 +177,8 @@ class AbstractWaveModel:
 
         Returns
         -------
-        dict
-            Should contain the following fields:
+        list of dict
+            Each one should contain the following fields:
             - si (list of floats): Discretized spectral density for each
               omega (should therefore be the same size as omega).
               In s m^2/rad.
@@ -230,7 +230,7 @@ class AbstractWaveModel:
                                   + NOT_IMPLEMENTED)
 
 
-class WavesServicer(waves_pb2_grpc.WavesServicer):
+class WavesServicer(wave_grpc_pb2_grpc.WavesServicer):
     """Implements the gRPC methods defined in waves.proto."""
 
     def __init__(self, model):
@@ -269,12 +269,12 @@ class WavesServicer(waves_pb2_grpc.WavesServicer):
                                 + str(exception)
                                 + " in the YAML. " + match)
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
-            return waves_pb2.SetParameterResponse(error_message=repr(exception))
+            return wave_types_pb2.SetParameterResponse(error_message=repr(exception))
         except Exception as exception:
             context.set_details(repr(exception))
             context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
-            return waves_pb2.SetParameterResponse(error_message=repr(exception))
-        return waves_pb2.SetParameterResponse(error_message='')
+            return wave_types_pb2.SetParameterResponse(error_message=repr(exception))
+        return wave_types_pb2.SetParameterResponse(error_message='')
 
     def elevations(self, request, context):
         """Get wave elevations from self.model.
@@ -300,7 +300,7 @@ class WavesServicer(waves_pb2_grpc.WavesServicer):
         except Exception as exception:
             context.set_details(repr(exception))
             context.set_code(grpc.StatusCode.UNKNOWN)
-        response = waves_pb2.XYZTGrid()
+        response = wave_types_pb2.XYZTGrid()
         response.x[:] = request.x
         response.y[:] = request.y
         response.z[:] = z_s
@@ -333,7 +333,7 @@ class WavesServicer(waves_pb2_grpc.WavesServicer):
         except Exception as exception:
             context.set_details(repr(exception))
             context.set_code(grpc.StatusCode.UNKNOWN)
-        response = waves_pb2.DynamicPressuresResponse()
+        response = wave_types_pb2.DynamicPressuresResponse()
         response.x[:] = request.x
         response.y[:] = request.y
         response.z[:] = request.z
@@ -367,7 +367,7 @@ class WavesServicer(waves_pb2_grpc.WavesServicer):
         except Exception as exception:
             context.set_details(repr(exception))
             context.set_code(grpc.StatusCode.UNKNOWN)
-        response = waves_pb2.OrbitalVelocitiesResponse()
+        response = wave_types_pb2.OrbitalVelocitiesResponse()
         response.x[:] = request.x
         response.y[:] = request.y
         response.z[:] = request.z
@@ -393,19 +393,22 @@ class WavesServicer(waves_pb2_grpc.WavesServicer):
         """
         LOGGER.info('Got spectrum request')
         try:
-            spectrum = self.model.spectrum(request.x, request.y, request.t)
+            spectra = self.model.spectrum(request.x, request.y, request.t)
         except NotImplementedError as exception:
             context.set_details(repr(exception))
             context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         except Exception as exception:
             context.set_details(repr(exception))
             context.set_code(grpc.StatusCode.UNKNOWN)
-        response = waves_pb2.SpectrumResponse()
-        response.si[:] = spectrum.si
-        response.dj[:] = spectrum.dj
-        response.omega[:] = spectrum.omega
-        response.psi[:] = spectrum.psi
-        response.phase[:] = spectrum.phase
+        response = wave_types_pb2.SpectrumResponse()
+        for spectrum in spectra:
+            s = wave_types_pb2.Spectrum()
+            s.si[:] = spectrum.si
+            s.dj[:] = spectrum.dj
+            s.omega[:] = spectrum.omega
+            s.psi[:] = spectrum.psi
+            s.phase[:] = spectrum.phase
+            response.spectrum.append(s)
         return response
 
     def angular_frequencies_for_rao(self, _, context):
@@ -426,8 +429,11 @@ class WavesServicer(waves_pb2_grpc.WavesServicer):
         except Exception as exception:
             context.set_details(repr(exception))
             context.set_code(grpc.StatusCode.UNKNOWN)
-        response = waves_pb2.AngularFrequencies()
-        response.omegas[:] = omegas
+        response = wave_types_pb2.AngularFrequenciesResponse()
+        for omega in omegas:
+            o = wave_types_pb2.AngularFrequencies()
+            o.omegas[:] = omega
+            response.angular_frequencies.append(o)
         return response
 
     def directions_for_rao(self, _, context):
@@ -448,8 +454,11 @@ class WavesServicer(waves_pb2_grpc.WavesServicer):
         except Exception as exception:
             context.set_details(repr(exception))
             context.set_code(grpc.StatusCode.UNKNOWN)
-        response = waves_pb2.Directions()
-        response.psis[:] = psis
+        response = wave_types_pb2.Directions()
+        for psi in psis:
+            p = wave_types_pb2.Directions()
+            p.psis[:] = psi
+            response.directions.append(p)
         return response
 
 
@@ -459,7 +468,7 @@ _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 def serve(model):
     """Launch the gRPC server."""
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    waves_pb2_grpc.add_WavesServicer_to_server(
+    wave_grpc_pb2_grpc.add_WavesServicer_to_server(
         WavesServicer(model), server)
     server.add_insecure_port('[::]:50051')
     server.start()

@@ -1,17 +1,5 @@
 syntax = "proto3";
 
-
-service Waves
-{
-    rpc set_parameters(SetParameterRequest)                    returns (SetParameterResponse);
-    rpc elevations(XYTGrid)                                    returns (XYZTGrid);
-    rpc dynamic_pressures(XYZTGrid)                            returns (DynamicPressuresResponse);
-    rpc orbital_velocities(XYZTGrid)                           returns (OrbitalVelocitiesResponse);
-    rpc spectrum(SpectrumRequest)                              returns (SpectrumResponse);
-    rpc angular_frequencies_for_rao(AngularFrequenciesRequest) returns (AngularFrequencies);
-    rpc directions_for_rao(DirectionsRequest)                  returns (Directions);
-}
-
 message SetParameterRequest
 {
     string parameters = 1; // YAML string containing the parameters to set for this particular model.
@@ -69,7 +57,7 @@ message PhasesForEachFrequency
     repeated double phase = 1; //!< Random phase (should have the same size as omega in SpectrumResponse. In radian.
 }
 
-message SpectrumResponse
+message Spectrum
 {
     repeated double Si = 1;                    // Discretized spectral density for each omega (should therefore be the same size as omega) (in s m^2/rad)
     repeated double Dj = 2;                    // Spatial spreading for each psi (should therefore be the same size as psi) (in 1/rad)
@@ -77,6 +65,11 @@ message SpectrumResponse
     repeated double psi = 4;                   // Directions between 0 & 2pi the spatial spreading was discretized at (in rad)
     repeated double k = 5;                     // Discretized wave number for each frequency (should therefore be the same size as omega) in rad/m.
     repeated PhasesForEachFrequency phase = 6; // Random phases, for each (direction,frequency) couple (but time invariant), should have the same size as psi. In radian.
+}
+
+message SpectrumResponse
+{
+    repeated Spectrum spectrum = 1; // Can have several directional wave spectral (one per direction)
 }
 
 message AngularFrequenciesRequest
@@ -95,4 +88,14 @@ message AngularFrequencies
 message Directions
 {
     repeated double psis = 1; // Directions between [0, 2pi[ the spatial spreading was discretized at (in rad). Used, for example, when interpolating the wave RAOs.
+}
+
+message AngularFrequenciesResponse
+{
+    repeated AngularFrequencies angular_frequencies = 1; // One per directional spectrum
+}
+
+message DirectionsResponse
+{
+    repeated Directions directions = 1; // One per directional spectrum
 }

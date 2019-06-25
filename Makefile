@@ -20,7 +20,7 @@ ghz-perf-test: debian-grpc compose-ghz-perf-test.yml
 pylama:
 	cd pylama && make
 
-python: compose-python.yml python_client/* python_server/* waves.proto pylama
+python: compose-python.yml python_client/* python_server/* wave_types.proto wave_grpc.proto pylama
 	@docker run -t --rm -v $(shell pwd):/work -w /work -u $(shell id -u):$(shell id -g) pylama /work/python_server
 	@docker run -t --rm -v $(shell pwd):/work -w /work -u $(shell id -u):$(shell id -g) pylama /work/python_client
 	@CURRENT_UID=$(shell id -u):$(shell id -g) docker-compose -f compose-python.yml up -t 0 --exit-code-from client --abort-on-container-exit --build --force-recreate

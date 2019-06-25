@@ -7,8 +7,8 @@ import logging
 
 import grpc
 
-import waves_pb2
-import waves_pb2_grpc
+import wave_types_pb2
+import wave_grpc_pb2_grpc
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
@@ -26,8 +26,8 @@ LOGGER.setLevel(logging.INFO)
 def serve():
     """Connect to the gRPC wave server."""
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    waves_pb2_grpc.add_WavesServicer_to_server(
-        waves_pb2_grpc.WavesServicer(), server)
+    wave_grpc_pb2_grpc.add_WavesServicer_to_server(
+        wave_grpc_pb2_grpc.WavesServicer(), server)
     server.add_insecure_port('[::]:50051')
     server.start()
     try:
@@ -42,19 +42,19 @@ class Waves:
 
     def __init__(self, channel, parameters):
         """Constructor."""
-        self.stub = waves_pb2_grpc.WavesStub(channel)
+        self.stub = wave_grpc_pb2_grpc.WavesStub(channel)
         response = self.set_parameters(parameters)
         if response:
             LOGGER.error('Error connecting to wave server: %s', response)
 
     def set_parameters(self, parameters):
         """Set the wave model's YAML parameters."""
-        request = waves_pb2.SetParameterRequest(parameters=parameters)
+        request = wave_types_pb2.SetParameterRequest(parameters=parameters)
         return self.stub.set_parameters(request).error_message
 
     def elevations(self, xyts):
         """Compute wave elevations on a grid."""
-        xytgrid = waves_pb2.XYTGrid()
+        xytgrid = wave_types_pb2.XYTGrid()
         for xyt in xyts:
             xytgrid.x.append(xyt['x'])
             xytgrid.y.append(xyt['y'])
@@ -71,7 +71,7 @@ class Waves:
 
     def dynamic_pressures(self, xyzts):
         """Compute the wave dynamic pressure on a grid."""
-        xyztgrid = waves_pb2.XYZTGrid()
+        xyztgrid = wave_types_pb2.XYZTGrid()
         xyztgrid.t = xyzts['t']
         for xyt in xyzts:
             xyztgrid.x.append(xyt['x'])
@@ -93,7 +93,7 @@ class Waves:
 
     def orbital_velocities(self, xyzts):
         """Compute the wave particles orbital velocity on a grid."""
-        xyztgrid = waves_pb2.XYZTGrid()
+        xyztgrid = wave_types_pb2.XYZTGrid()
         xyztgrid.t = xyzts['t']
         for xyt in xyzts:
             xyztgrid.x.append(xyt['x'])
@@ -117,7 +117,7 @@ class Waves:
 
     def spectrum(self, t):
         """Get a linear wave spectrum at a given point in space-time."""
-        request = waves_pb2.SpectrumRequest()
+        request = wave_types_pb2.SpectrumRequest()
         request.t = t
         response = self.stub.spectrum(request)
         return [{'a': e.a,
