@@ -118,7 +118,7 @@ class Airy(waves.AbstractWaveModel):
         r=e^{-0.5\left(\frac{\omega-\omega_0}{\sigma\omega_0}\right)^2}
         ```
 
-        et
+        and
 
         ```math
         \sigma=\left\{\begin{array}{l}0.07,\omega\leq\omega_0\\0.09,
@@ -208,7 +208,7 @@ class Airy(waves.AbstractWaveModel):
         eta = self.elevation(x, y, t)
         acc = 0
         psi = dir_spec['psi'][0]
-        for s_i, k, omega, phase in zip(['si'],
+        for s_i, k, omega, phase in zip(dir_spec['si'],
                                         dir_spec['k'],
                                         dir_spec['omega'],
                                         dir_spec['phase']):
@@ -265,19 +265,18 @@ class Airy(waves.AbstractWaveModel):
         v_y = 0
         v_z = 0
         psi = dir_spec['psi'][0]
-        for s_i, k, omega, phase in zip(['si'],
+        for s_i, k, omega, phase in zip(dir_spec['si'],
                                         dir_spec['k'],
                                         dir_spec['omega'],
                                         dir_spec['phase']):
-            pdyn_factor = self.pdyn_factor(k, z, eta)
-            pdyn_factor_sh = pdyn_factor
+            pdyn_factor_sh = pdyn_factor(k, z, eta)
             k_x_cos_psi_y_sin_psi = k * (x * math.cos(psi)
                                          + y * math.sin(psi))
             theta = -omega * t + k_x_cos_psi_y_sin_psi + phase
             cos_theta = math.cos(theta)
             sin_theta = math.sin(theta)
             a_k_omega = s_i * k / omega
-            a_k_omega_pdyn_factor_sin_theta = a_k_omega * pdyn_factor \
+            a_k_omega_pdyn_factor_sin_theta = a_k_omega * pdyn_factor_sh \
                 * sin_theta
             v_x += a_k_omega_pdyn_factor_sin_theta * math.cos(psi)
             v_y += a_k_omega_pdyn_factor_sin_theta * math.sin(psi)
