@@ -1,16 +1,13 @@
 version: '3'
 services:
   server:
-    build: python_server
+    image: grpc-waves-python-server
     user: ${CURRENT_UID}
-    entrypoint: ["/bin/bash", "entrypoint.sh", "/data/airy.py"]
+    command: /data/airy.py
     volumes:
     - ./python_server:/data
-    - .:/proto
   client:
-    build: python_client
+    image: grpc-waves-python-client
     user: ${CURRENT_UID}
-    volumes:
-    - .:/proto
     depends_on:
     - server

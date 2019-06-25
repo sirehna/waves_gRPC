@@ -5,3 +5,4 @@ build*
 .vscode
 performance.html
 performance.md
+*/__pycache__
