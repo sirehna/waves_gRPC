@@ -23,11 +23,13 @@ pylama:
 python: compose-python.yml python_client/* python_server/* wave_types.proto wave_grpc.proto pylama
 	@docker run -t --rm -v $(shell pwd):/work -w /work -u $(shell id -u):$(shell id -g) pylama /work/python_server
 	@docker run -t --rm -v $(shell pwd):/work -w /work -u $(shell id -u):$(shell id -g) pylama /work/python_client
+	make -C python_server
+	make -C python_client
 	@CURRENT_UID=$(shell id -u):$(shell id -g) docker-compose -f compose-python.yml up -t 0 --exit-code-from client --abort-on-container-exit --build --force-recreate
 
 report: performance.html
 
 performance.html: performance.md
-	docker build -t pandoc pandoc 
+	docker build -t pandoc pandoc
 	docker run -w /work -v `pwd`:/work -u $(shell id -u):$(shell id -g) pandoc -s --mathml --highlight-style pygments -o performance.html performance.md
 
