@@ -1,13 +1,13 @@
-FROM python:3.6
+FROM python:3.7-slim-stretch
 
 ADD requirements.txt .
-RUN pip3 install -r requirements.txt && \
+RUN python -m pip install -r requirements.txt && \
     mkdir -p /usr/python && \
     chmod a+rwx /usr/python
 ENV PYTHONPATH /usr/python
 ADD wave_types.proto .
 ADD wave_grpc.proto .
-RUN python3 -m grpc_tools.protoc -I . --python_out=/usr/python --grpc_python_out=/usr/python wave_types.proto
-RUN python3 -m grpc_tools.protoc -I . --python_out=/usr/python --grpc_python_out=/usr/python wave_grpc.proto
+RUN python -m grpc_tools.protoc -I . --python_out=/usr/python --grpc_python_out=/usr/python wave_types.proto
+RUN python -m grpc_tools.protoc -I . --python_out=/usr/python --grpc_python_out=/usr/python wave_grpc.proto
 ADD waves.py /usr/python
-ENTRYPOINT ["python3"]
+ENTRYPOINT ["python"]
