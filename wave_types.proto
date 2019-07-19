@@ -54,7 +54,7 @@ message SpectrumRequest
 
 message PhasesForEachFrequency
 {
-    repeated double phase = 1; //!< Random phase (should have the same size as omega in SpectrumResponse. In radian.
+    repeated double phase = 1; //!< Random phase (should have the same size as psi in SpectrumResponse. In radian.
 }
 
 message Spectrum
@@ -64,7 +64,7 @@ message Spectrum
     repeated double omega = 3;                 // Angular frequencies the spectrum was discretized at (in rad/s).
     repeated double psi = 4;                   // Directions between 0 & 2pi the spatial spreading was discretized at (in rad)
     repeated double k = 5;                     // Discretized wave number for each frequency (should therefore be the same size as omega) in rad/m.
-    repeated PhasesForEachFrequency phase = 6; // Random phases, for each (direction,frequency) couple (but time invariant), should have the same size as psi. In radian.
+    repeated PhasesForEachFrequency phase = 6; // Random phases, for each [frequency i][direction j] couple (but time invariant), should have the same size as omega. In radian.
 }
 
 message SpectrumResponse
