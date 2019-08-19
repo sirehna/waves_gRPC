@@ -1,0 +1,36 @@
+sudo: false
+dist: trusty
+
+language: c++
+
+services:
+  - docker
+
+before_install:
+  - echo "A 'docker pull' command will be performed with the script section"
+
+script:
+  - make
+
+after_success:
+- |
+    echo "TRAVIS_BRANCH  $TRAVIS_BRANCH"
+    echo "TRAVIS_TAG     $TRAVIS_TAG"
+    echo "TARGET         $TARGET"
+
+# travis setup releases
+# https://docs.travis-ci.com/user/deployment
+# https://docs.travis-ci.com/user/deployment#conditional-releases-with-on
+before_deploy:
+- ls -altr || true;
+deploy:
+- provider: pages
+  skip-cleanup: true
+  local-dir: public
+  github-token: $GITHUB_TOKEN
+  keep-history: false
+  on:
+    tags: true
+    repo: sirehna/waves_gRPC
+    branch: master
+    condition: $TARGET = debian_9_release_gcc_6
