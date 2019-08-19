@@ -2,11 +2,8 @@ cmake_minimum_required(VERSION 2.8)
 
 project(Wave C CXX)
 
-SET(THIRDPARTY_PREFIX "" CACHE STRING
-    "String prefix to indicate third_party location.
-      - Use .. with local compilation
-      - Leave this string empty if building with docker that mounts ../third_party as a volume
-    ")
+SET(THIRDPARTY_GOOGLETEST "/opt/googletest" CACHE STRING
+    "Google test source location ")
 
 if(NOT MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
@@ -105,12 +102,12 @@ add_executable(wave_test
     wave_client.cc
     ${hw_proto_srcs}
     ${hw_grpc_srcs}
-    google_test/googletest/src/gtest-all.cc
-    google_test/googletest/src/gtest_main.cc
+    ${THIRDPARTY_GOOGLETEST}/googletest/src/gtest-all.cc
+    ${THIRDPARTY_GOOGLETEST}/googletest/src/gtest_main.cc
 )
 target_include_directories(wave_test SYSTEM PRIVATE
-    google_test/googletest
-    google_test/googletest/include)
+    ${THIRDPARTY_GOOGLETEST}/googletest
+    ${THIRDPARTY_GOOGLETEST}/googletest/include)
 target_link_libraries(wave_test
     ${_GRPC_GRPCPP_UNSECURE}
     ${_PROTOBUF_LIBPROTOBUF}
