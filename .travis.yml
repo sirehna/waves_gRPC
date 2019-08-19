@@ -11,6 +11,7 @@ before_install:
 
 script:
   - make
+  - make report
 
 after_success:
 - |
@@ -30,7 +31,6 @@ deploy:
   github-token: $GITHUB_TOKEN
   keep-history: false
   on:
-    tags: true
+    # tags: true
     repo: sirehna/waves_gRPC
-    branch: master
-    condition: $TARGET = debian_9_release_gcc_6
+    # branch: master
