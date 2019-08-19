@@ -7,7 +7,7 @@
 
 The generated performance report can be seen here:
 
-[https://sirehna.gitlab-pages.sirehna.com/demo_docker_grpc/performance.html](https://sirehna.gitlab-pages.sirehna.com/demo_docker_grpc/performance.html).
+[https://sirehna.github.io/waves_gRPC](https://sirehna.github.io/waves_gRPC).
 
 ## How to run it
 
