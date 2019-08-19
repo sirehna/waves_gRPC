@@ -33,4 +33,4 @@ deploy:
   on:
     # tags: true
     repo: sirehna/waves_gRPC
-    # branch: master
+    branch: travis
