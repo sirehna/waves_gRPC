@@ -1,6 +1,7 @@
 # Numerical C++ Demo with gRPC and Docker
 
 [![License](https://img.shields.io/badge/License-EPL%202.0-blue.svg)](https://opensource.org/licenses/EPL-2.0)
+[![Build Status](https://travis-ci.org/sirehna/waves_gRPC.svg?branch=master)](https://travis-ci.org/sirehna/waves_gRPC)
 
 ## Performances
 
