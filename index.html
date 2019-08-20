@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+</head>
+<body>
+<h1 id="grpc-performance-tests">gRPC performance tests</h1>
+<h2 id="requests.-vector-of-size-1.">10000 requests. Vector of size 1.</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Input</th>
+<th>Output</th>
+<th>Average time per request (ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>(repeated x, repeated y)</td>
+<td>repeated z</td>
+<td>0.113432</td>
+</tr>
+<tr class="even">
+<td>(repeated x, repeated y)</td>
+<td>(repeated x, repeated y, repeated z)</td>
+<td>0.112283</td>
+</tr>
+<tr class="odd">
+<td>(repeated x, repeated y)</td>
+<td>repeated (x, y, z)</td>
+<td>0.108954</td>
+</tr>
+<tr class="even">
+<td>repeated (x, y)</td>
+<td>repeated z</td>
+<td>0.108637</td>
+</tr>
+<tr class="odd">
+<td>repeated (x, y)</td>
+<td>(repeated x, repeated y, repeated z)</td>
+<td>0.110266</td>
+</tr>
+<tr class="even">
+<td>repeated (x, y)</td>
+<td>repeated (x, y, z)</td>
+<td>0.109425</td>
+</tr>
+</tbody>
+</table>
+<h2 id="requests.-vector-of-size-1000.">1000 requests. Vector of size 1000.</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Input</th>
+<th>Output</th>
+<th>Average time per request (ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>(repeated x, repeated y)</td>
+<td>repeated z</td>
+<td>0.320601</td>
+</tr>
+<tr class="even">
+<td>(repeated x, repeated y)</td>
+<td>(repeated x, repeated y, repeated z)</td>
+<td>0.483689</td>
+</tr>
+<tr class="odd">
+<td>(repeated x, repeated y)</td>
+<td>repeated (x, y, z)</td>
+<td>1.10231</td>
+</tr>
+<tr class="even">
+<td>repeated (x, y)</td>
+<td>repeated z</td>
+<td>0.79449</td>
+</tr>
+<tr class="odd">
+<td>repeated (x, y)</td>
+<td>(repeated x, repeated y, repeated z)</td>
+<td>0.933483</td>
+</tr>
+<tr class="even">
+<td>repeated (x, y)</td>
+<td>repeated (x, y, z)</td>
+<td>1.57744</td>
+</tr>
+</tbody>
+</table>
+<h2 id="requests.-repeated-x-repeated-y-repeated-x-repeated-y-repeated-z">1000 requests. (repeated x, repeated y) + (repeated x, repeated y, repeated z)</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Vector size</th>
+<th>Average time per request (ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>0.107006</td>
+</tr>
+<tr class="even">
+<td>100</td>
+<td>0.176401</td>
+</tr>
+<tr class="odd">
+<td>1000</td>
+<td>0.483492</td>
+</tr>
+<tr class="even">
+<td>2000</td>
+<td>0.812445</td>
+</tr>
+<tr class="odd">
+<td>5000</td>
+<td>2.14532</td>
+</tr>
+<tr class="even">
+<td>10000</td>
+<td>4.20782</td>
+</tr>
+<tr class="odd">
+<td>50000</td>
+<td>19.0751</td>
+</tr>
+<tr class="even">
+<td>100000</td>
+<td>37.8019</td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>
