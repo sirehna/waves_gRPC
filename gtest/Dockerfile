@@ -1,13 +1,13 @@
 FROM debian-grpc AS builder
 WORKDIR /work
 ADD CMakeLists.txt wave_client.cc wave_client.hh wave_test.cc /work/
-ADD google_test /work/google_test
 RUN mkdir build \
  && cd build \
  && cmake -Wno-dev \
 	          -G Ninja \
-	          -DCMAKE_BUILD_TYPE=Relase \
+	          -DCMAKE_BUILD_TYPE=Release \
 	          -DCMAKE_INSTALL_PREFIX:PATH=/opt/grpc_demo \
+	          -DTHIRDPARTY_GOOGLETEST:PATH=/opt/googletest \
 	          /work
 RUN cd build && ninja wave_test
 
