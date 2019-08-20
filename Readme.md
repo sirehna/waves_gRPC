@@ -1,12 +1,13 @@
 # Numerical C++ Demo with gRPC and Docker
 
 [![License](https://img.shields.io/badge/License-EPL%202.0-blue.svg)](https://opensource.org/licenses/EPL-2.0)
+[![Build Status](https://travis-ci.org/sirehna/waves_gRPC.svg?branch=master)](https://travis-ci.org/sirehna/waves_gRPC)
 
 ## Performances
 
 The generated performance report can be seen here:
 
-[https://sirehna.gitlab-pages.sirehna.com/demo_docker_grpc/performance.html](https://sirehna.gitlab-pages.sirehna.com/demo_docker_grpc/performance.html).
+[https://sirehna.github.io/waves_gRPC](https://sirehna.github.io/waves_gRPC).
 
 ## How to run it
 

@@ -11,6 +11,8 @@ RUN echo "deb http://deb.debian.org/debian stretch-backports main" >>  /etc/apt/
         libc-ares-dev \
         libssl-dev \
         ninja-build \
+        ca-certificates \
+        wget \
     && \
     apt-get -t stretch-backports install --yes --no-install-recommends \
         libgrpc++-dev \
@@ -20,4 +22,11 @@ RUN echo "deb http://deb.debian.org/debian stretch-backports main" >>  /etc/apt/
         libprotobuf-dev \
         libprotoc-dev \
         protobuf-compiler-grpc
+
+RUN wget https://github.com/google/googletest/archive/release-1.8.1.tar.gz -O googletest.tar.gz && \
+    mkdir -p /opt && \
+    mkdir -p /opt/googletest && \
+    tar -xf googletest.tar.gz --strip 1 -C /opt/googletest && \
+    rm -rf googletest.tar.gz
+
 ADD wave.proto /

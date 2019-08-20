@@ -2,12 +2,6 @@ cmake_minimum_required(VERSION 2.8)
 
 project(Wave C CXX)
 
-SET(THIRDPARTY_PREFIX "/third_party" CACHE STRING
-    "String prefix to indicate third_party location.
-      - Use .. with local compilation
-      - Leave this string empty if building with docker that mounts ../third_party as a volume
-    ")
-
 if(NOT MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 else()
@@ -109,6 +103,3 @@ target_link_libraries(wave_server
     ${_GRPC_GRPCPP_UNSECURE}
     ${_PROTOBUF_LIBPROTOBUF}
     pthread)
-
-target_include_directories(wave_server SYSTEM PRIVATE
-    ${THIRDPARTY_PREFIX}/third_party/args)
